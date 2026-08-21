@@ -1,0 +1,149 @@
+{
+  "types": [
+    {
+      "mnemonique": "AIGLE_COMPORTEMENT_DOMAINE_VITAL",
+      "label_default": "Informations concernant les comportements liés au domaine vital",
+      "definition_default": "Informations concernant les comportements liés au domaine vital"
+    },
+    {
+      "mnemonique": "AIGLE_STATUT_REPRODUCTION",
+      "label_default": "Statut de reproduction du domaine vital",
+      "definition_default": "Statut de reproduction du domaine vital"
+    }
+  ],
+  "nomenclatures": [
+    {
+      "type": "TYPE_SITE",
+      "cd_nomenclature": "DOMAINE_VITAL",
+      "mnemonique": "Aire aigle",
+      "label_default": "Domaine vital",
+      "definition_default": "Domaine vital"
+    },
+    {
+      "type": "AIGLE_COMPORTEMENT_DOMAINE_VITAL",
+      "cd_nomenclature": "AUCUN_COMPORTEMENT",
+      "mnemonique": "aucun comportement",
+      "label_default": "aucun comportement",
+      "definition_default": "aucun comportement"
+    },
+    {
+      "type": "AIGLE_COMPORTEMENT_DOMAINE_VITAL",
+      "cd_nomenclature": "FESTONS",
+      "mnemonique": "festons",
+      "label_default": "festons",
+      "definition_default": "festons"
+    },
+    {
+      "type": "AIGLE_COMPORTEMENT_DOMAINE_VITAL",
+      "cd_nomenclature": "TRANSPORT_DE_BRANCHE",
+      "mnemonique": "transport de branche",
+      "label_default": "transport de branche",
+      "definition_default": "transport de branche"
+    },
+    {
+      "type": "AIGLE_COMPORTEMENT_DOMAINE_VITAL",
+      "cd_nomenclature": "ACCOUPLEMENT",
+      "mnemonique": "accouplement",
+      "label_default": "accouplement",
+      "definition_default": "accouplement"
+    },
+    {
+      "type": "AIGLE_COMPORTEMENT_DOMAINE_VITAL",
+      "cd_nomenclature": "AUTRE_(VOIR_REMARQUES)",
+      "mnemonique": "autre (voir remarques)",
+      "label_default": "autre (voir remarques)",
+      "definition_default": "autre (voir remarques)"
+    },
+    {
+      "type": "AIGLE_COMPORTEMENT_DOMAINE_VITAL",
+      "cd_nomenclature": "COMBAT(S)",
+      "mnemonique": "combat(s)",
+      "label_default": "combat(s)",
+      "definition_default": "combat(s)"
+    },
+    {
+      "type": "AIGLE_COMPORTEMENT_DOMAINE_VITAL",
+      "cd_nomenclature": "CRI(S)",
+      "mnemonique": "Cri(s)",
+      "label_default": "Cri(s)",
+      "definition_default": "Cri(s)"
+    },
+    {
+      "type": "AIGLE_COMPORTEMENT_DOMAINE_VITAL",
+      "cd_nomenclature": "TRANSPORT_DE_PROIE",
+      "mnemonique": "transport de proie",
+      "label_default": "transport de proie",
+      "definition_default": "transport de proie"
+    },
+    {
+      "type": "AIGLE_COMPORTEMENT_DOMAINE_VITAL",
+      "cd_nomenclature": "VOL_EN_TANDEM",
+      "mnemonique": "vol en tandem",
+      "label_default": "vol en tandem",
+      "definition_default": "vol en tandem"
+    },
+    {
+      "type": "AIGLE_COMPORTEMENT_DOMAINE_VITAL",
+      "cd_nomenclature": "RASSEMBLEMENT_D'AIGLES",
+      "mnemonique": "rassemblement d'aigles",
+      "label_default": "rassemblement d'aigles",
+      "definition_default": "rassemblement d'aigles"
+    },
+    {
+      "type": "AIGLE_COMPORTEMENT_DOMAINE_VITAL",
+      "cd_nomenclature": "AIGLE(S)_PERCHÉ(S)",
+      "mnemonique": "aigle(s) perché(s)",
+      "label_default": "aigle(s) perché(s)",
+      "definition_default": "aigle(s) perché(s)"
+    },
+    {
+      "type": "AIGLE_STATUT_REPRODUCTION",
+      "cd_nomenclature": "0",
+      "mnemonique": "non suivi",
+      "label_default": "non suivi",
+      "definition_default": "non suivi"
+    },
+    {
+      "type": "AIGLE_STATUT_REPRODUCTION",
+      "cd_nomenclature": "2",
+      "mnemonique": "reproduction en cours",
+      "label_default": "reproduction en cours",
+      "definition_default": "reproduction en cours"
+    },
+    {
+      "type": "AIGLE_STATUT_REPRODUCTION",
+      "cd_nomenclature": "3",
+      "mnemonique": "1 jeune envolé",
+      "label_default": "1 jeune envolé",
+      "definition_default": "1 jeune envolé"
+    },
+    {
+      "type": "AIGLE_STATUT_REPRODUCTION",
+      "cd_nomenclature": "4",
+      "mnemonique": "2 jeunes envolés",
+      "label_default": "2 jeunes envolés",
+      "definition_default": "2 jeunes envolés"
+    },
+    {
+      "type": "AIGLE_STATUT_REPRODUCTION",
+      "cd_nomenclature": "9",
+      "mnemonique": "échec",
+      "label_default": "échec",
+      "definition_default": "échec"
+    },
+    {
+      "type": "AIGLE_STATUT_REPRODUCTION",
+      "cd_nomenclature": "1",
+      "mnemonique": "pas de conclusion possible",
+      "label_default": "pas de conclusion possible",
+      "definition_default": "pas de conclusion possible"
+    },
+    {
+      "type": "AIGLE_STATUT_REPRODUCTION",
+      "cd_nomenclature": "8",
+      "mnemonique": "pas de reproduction constatée",
+      "label_default": "pas de reproduction constatée",
+      "definition_default": "pas de reproduction constatée"
+    }
+  ]
+}

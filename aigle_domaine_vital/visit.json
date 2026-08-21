@@ -1,0 +1,70 @@
+{
+  "display_properties": [
+    "id_base_site",
+    "observers",
+    "visit_date_min",
+    "visit_duration",
+    "comportement_domaine_vital",
+    "nb_jeune_seul",
+    "nb_jeune_avec_adulte",
+    "statut_reproduction",
+    "comments"
+  ],
+  "display_list": [
+    "visit_date_min",
+    "observers",
+    "statut_reproduction",
+    "comments"
+  ],
+  "label": "Contrôle",
+  "genre": "M",
+  "map_label_field_name": "base_site_name",
+  "specific": {
+    "id_dataset": {
+      "hidden": "({meta}) => meta.dataset && Object.keys(meta.dataset).length == 1"
+    },
+    "comments": {
+      "type_widget": "textarea"
+    },
+    "visit_duration": {
+      "type_widget": "number",
+      "attribut_label": "Durée de la visite (en heure)",
+      "required": true,
+      "min": 0,
+      "max": 20
+    },
+    "comportement_domaine_vital": {
+      "type_widget": "nomenclature",
+      "attribut_label": "Comportement",
+      "code_nomenclature_type": "AIGLE_COMPORTEMENT_DOMAINE_VITAL",
+      "type_util": "nomenclature",
+      "multi_select": true
+    },
+    "nb_jeune_seul": {
+      "type_widget": "number",
+      "attribut_label": "Nombre de jeune seul",
+      "required": false,
+      "min": 0,
+      "max": 20
+    },
+    "nb_jeune_avec_adulte": {
+      "type_widget": "number",
+      "attribut_label": "Nombre de jeune avec adulte",
+      "required": false,
+      "min": 0,
+      "max": 20
+    },
+    "statut_reproduction": {
+      "type_widget": "nomenclature",
+      "attribut_label": "Statut de reproduction:",
+      "code_nomenclature_type": "AIGLE_STATUT_REPRODUCTION",
+      "type_util": "nomenclature"
+    },
+    "medias": {
+      "hidden": true,
+      "type_widget": "medias",
+      "attribut_label": "Médias",
+      "schema_dot_table": "gn_monitoring.t_base_visits"
+    }
+  }
+}

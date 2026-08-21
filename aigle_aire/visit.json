@@ -1,0 +1,81 @@
+{
+  "display_properties": [
+    "id_base_site",
+    "observers",
+    "visit_date_min",
+    "visit_duration",
+    "activite_aire",
+    "nb_adulte",
+    "nb_jeune_blanc",
+    "nb_jeune_noir",
+    "nb_jeune_envole",
+    "comments",
+    "id_nomenclature_reprodution_status"
+  ],
+  "display_list": ["visit_date_min", "observers", "activite_aire"],
+  "label": "Contrôle",
+  "genre": "M",
+  "map_label_field_name": "base_site_name",
+  "specific": {
+    "id_dataset": {
+      "hidden": "({meta}) => meta.dataset && Object.keys(meta.dataset).length == 1"
+    },
+    "comments": {
+      "type_widget": "textarea"
+    },
+    "visit_duration": {
+      "type_widget": "number",
+      "attribut_label": "Durée de la visite (en heure)",
+      "required": true,
+      "min": 0,
+      "max": 20
+    },
+    "activite_aire": {
+      "type_widget": "nomenclature",
+      "attribut_label": "Activités liées à l'aire",
+      "code_nomenclature_type": "AIGLE_ACTIVITE_AIRE",
+      "type_util": "nomenclature",
+      "multi_select": true,
+      "required": false
+    },
+    "nb_adulte": {
+      "type_widget": "number",
+      "attribut_label": "Nombre d'adulte",
+      "required": false,
+      "min": 0,
+      "max": 20
+    },
+    "nb_jeune_blanc": {
+      "type_widget": "number",
+      "attribut_label": "Nombre de jeune blanc",
+      "required": false,
+      "min": 0,
+      "max": 20
+    },
+    "nb_jeune_noir": {
+      "type_widget": "number",
+      "attribut_label": "Nombre de jeune noir",
+      "required": false,
+      "min": 0,
+      "max": 20
+    },
+    "nb_jeune_envole": {
+      "type_widget": "number",
+      "attribut_label": "Nombre de jeune envolé",
+      "required": false,
+      "min": 0,
+      "max": 20
+    },
+    "medias": {
+      "hidden": true,
+      "type_widget": "medias",
+      "attribut_label": "Médias",
+      "schema_dot_table": "gn_monitoring.t_base_visits"
+    },
+    "nb_observations": {
+      "attribut_label": "Nombre d'observations",
+      "type_widget": "number",
+      "hidden": true
+    }
+  }
+}

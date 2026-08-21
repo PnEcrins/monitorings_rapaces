@@ -1,0 +1,41 @@
+{
+  "sorts": [
+    {
+      "prop": "base_site_name",
+      "dir": "asc"
+    }
+  ],
+  "filters": {},
+  "label": "Domaine vital",
+  "label_list": "Domaines vitaux",
+  "genre": "M",
+  "geometry_type": "Polygon",
+  "display_properties": [
+    "id_inventor",
+    "first_use_date",
+    "base_site_name",
+    "base_site_code",
+    "types_site"
+  ],
+  "display_list": ["base_site_name", "types_site", "nb_visits"],
+  "specific": {
+    "base_site_code": {
+      "attribut_label": "Code du domaine vital"
+    },
+    "first_use_date": {
+      "attribute_label": "date_saisie"
+    },
+    "base_site_name": {
+      "attribut_label": "Nom du domaine vital"
+    },
+    "id_inventor": {
+      "attribut_label": "Nom du digitaliseur"
+    },
+    "base_site_description": {
+      "hidden": true
+    },
+    "medias": {
+      "hidden": true
+    }
+  }
+}
