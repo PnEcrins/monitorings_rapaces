@@ -1,0 +1,149 @@
+{
+  "types": [
+    {
+      "mnemonique": "ACTIVITE_AIRE_RAPACES",
+      "label_default": "Activités liées à l'aire de rapace",
+      "definition_default": "Activités liées à l'aire de rapace constatées lors d'une visite"
+    },
+    {
+      "mnemonique": "RAPACE_STATUT_REPRODUCTION",
+      "label_default": "Statut de reproduction du rapace",
+      "definition_default": "Statut de reproduction du rapace"
+    }
+  ],
+  "nomenclatures": [
+    {
+      "type": "TYPE_SITE",
+      "cd_nomenclature": "AIRE_RAPACE",
+      "mnemonique": "Aire de rapace",
+      "label_default": "Aire de rapace",
+      "definition_default": "Aire de rapace"
+    },
+    {
+      "type": "ACTIVITE_AIRE_RAPACES",
+      "cd_nomenclature": "ACCOUPLEMENT",
+      "mnemonique": "Accouplement",
+      "label_default": "Accouplement",
+      "definition_default": "Accouplement"
+    },
+    {
+      "type": "ACTIVITE_AIRE_RAPACES",
+      "cd_nomenclature": "AIRE_VIDE",
+      "mnemonique": "Aire vide",
+      "label_default": "Aire vide",
+      "definition_default": "Aire vide"
+    },
+    {
+      "type": "ACTIVITE_AIRE_RAPACES",
+      "cd_nomenclature": "COUVAISON",
+      "mnemonique": "Couvaison",
+      "label_default": "Couvaison",
+      "definition_default": "Couvaison"
+    },
+    {
+      "type": "ACTIVITE_AIRE_RAPACES",
+      "cd_nomenclature": "JEUNE_AU_NID",
+      "mnemonique": "Jeune au nid",
+      "label_default": "Jeune au nid",
+      "definition_default": "Jeune au nid"
+    },
+    {
+      "type": "ACTIVITE_AIRE_RAPACES",
+      "cd_nomenclature": "JEUNE_ENVOLÉ",
+      "mnemonique": "Jeune envolé",
+      "label_default": "Jeune envolé",
+      "definition_default": "Jeune envolé"
+    },
+    {
+      "type": "ACTIVITE_AIRE_RAPACES",
+      "cd_nomenclature": "POSÉ",
+      "mnemonique": "Posé",
+      "label_default": "Posé",
+      "definition_default": "Posé"
+    },
+    {
+      "type": "ACTIVITE_AIRE_RAPACES",
+      "cd_nomenclature": "NON_RENSEIGNÉ",
+      "mnemonique": "Non renseigné",
+      "label_default": "Non renseigné",
+      "definition_default": "Non renseigné"
+    },
+    {
+      "type": "ACTIVITE_AIRE_RAPACES",
+      "cd_nomenclature": "NOURRISSAGE_DES_JEUNES",
+      "mnemonique": "Nourrissage des jeunes",
+      "label_default": "Nourrissage des jeunes",
+      "definition_default": "Nourrissage des jeunes"
+    },
+    {
+      "type": "ACTIVITE_AIRE_RAPACES",
+      "cd_nomenclature": "RECHARGE_DE_L'AIRE",
+      "mnemonique": "Recharge de l'aire",
+      "label_default": "Recharge de l'aire",
+      "definition_default": "Recharge de l'aire"
+    },
+    {
+      "type": "ACTIVITE_AIRE_RAPACES",
+      "cd_nomenclature": "RELÈVE_À_L'AIRE",
+      "mnemonique": "Relève à l'aire",
+      "label_default": "Relève à l'aire",
+      "definition_default": "Relève à l'aire"
+    },
+    {
+      "type": "ACTIVITE_AIRE_RAPACES",
+      "cd_nomenclature": "PASSAGE_EN_VOL",
+      "mnemonique": "Passage en vol",
+      "label_default": "Passage en vol",
+      "definition_default": "Passage en vol"
+    },
+    {
+      "type": "ACTIVITE_AIRE_RAPACES",
+      "cd_nomenclature": "TANDEM",
+      "mnemonique": "Tandem",
+      "label_default": "Tandem",
+      "definition_default": "Tandem"
+    },
+    {
+      "type": "ACTIVITE_AIRE_RAPACES",
+      "cd_nomenclature": "TERRITORIAL",
+      "mnemonique": "Territorial",
+      "label_default": "Territorial",
+      "definition_default": "Territorial"
+    },
+    {
+      "type": "RAPACE_STATUT_REPRODUCTION",
+      "cd_nomenclature": "REPRODUCTION_EN_COURS",
+      "mnemonique": "Reproduction en cours",
+      "label_default": "Reproduction en cours",
+      "definition_default": "Reproduction en cours"
+    },
+    {
+      "type": "RAPACE_STATUT_REPRODUCTION",
+      "cd_nomenclature": "SUCCÈS_DE_LA_REPRODUCTION",
+      "mnemonique": "Succès de la reproduction",
+      "label_default": "Succès de la reproduction",
+      "definition_default": "Succès de la reproduction"
+    },
+    {
+      "type": "RAPACE_STATUT_REPRODUCTION",
+      "cd_nomenclature": "ÉCHEC",
+      "mnemonique": "Échec",
+      "label_default": "Échec",
+      "definition_default": "Échec"
+    },
+    {
+      "type": "RAPACE_STATUT_REPRODUCTION",
+      "cd_nomenclature": "PAS_DE_CONCLUSION_POSSIBLE",
+      "mnemonique": "Pas de conclusion possible",
+      "label_default": "Pas de conclusion possible",
+      "definition_default": "Pas de conclusion possible"
+    },
+    {
+      "type": "RAPACE_STATUT_REPRODUCTION",
+      "cd_nomenclature": "PAS_DE_REPRODUCTION_CONSTATÉE",
+      "mnemonique": "Pas de reproduction constatée",
+      "label_default": "Pas de reproduction constatée",
+      "definition_default": "Pas de reproduction constatée"
+    }
+  ]
+}

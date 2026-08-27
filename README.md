@@ -1,3 +1,12 @@
+# Modules monitorings
+
+Ce repo regroupe les modules monitorings utilisé au PNE pour le suivi des rapaces.
+Il regroupe les modules de suivi de la reproduction de l'aigle royal (aigle + domaine vital), le module de suivi de la reproduction des gypaètes barbus et le module de veille territoirial de toutes les aires de rapaces.
+
+Les modules monitoring aigles et gypaètes sont complétés par le module "monitoring_year_synthese" qui permet d'avoir un vue cartographique de la reproduction année par année. Les modules contiennent donc des vues d'exports spécifiques pour ce module
+
+Le module de veille territorial "aire de rapaces" a vocation a regrouper toutes les aires de rapaces connu sur le PNE pour avoir un vue d'ensemble des aires existantes (notamment utiles pour les autorisation de survols et autres). Ce module regroupe donc les trois "type de sites" : aigle, gypaète et "autre aire de rapace".
+
 # Modules monitoring aigle
 
 En 2026 le PNE migre son ancienne application aigle vers le module monitoring.
@@ -30,12 +39,24 @@ python media/monitorings/aigle/migration/migrate.py --module aigle         --id-
 
 ### Changement de structure
 
-Certaines anciennes valeurs de `bib_activites` (aigle) et `bib_comportements`
-(domaine_vital) ne sont plus des nomenclatures dans le nouveau modèle : elles sont
-devenues des champs entiers de comptage (`nb_adulte`, `nb_jeune_blanc`,
-`nb_jeune_noir`, `nb_jeune_envole` côté aigle ; `nb_jeune_seul`,
-`nb_jeune_avec_adulte` côté domaine_vital).
-Ce changement est fait pour éviter de mélanger des dénombrement et des comportements.
+- Certaines anciennes valeurs de `bib_activites` (aigle) et `bib_comportements`
+  (domaine_vital) ne sont plus des nomenclatures dans le nouveau modèle : elles sont
+  devenues des champs entiers de comptage (`nb_adulte`, `nb_jeune_blanc`,
+  `nb_jeune_noir`, `nb_jeune_envole` côté aigle ; `nb_jeune_seul`,
+  `nb_jeune_avec_adulte` côté domaine_vital).
+  Ce changement est fait pour éviter de mélanger des dénombrement et des comportements.
+
+- le statut de reproduction, anciennement stocké au niveau du domaine vital (par année) est maintenant stocké au niveau de la visite. En effet le modèle de monitoring ne permet pas de stocker des valeurs temporelles au niveau du site. On a donc aujourd'hui potentiellement plusieurs "statut de reproduction" pour une année et pour un site. Le module "monitoring_year_synthese" se charge lui de remettre à plat le statut de repro par année et par domaine vital (en gardant le statut "max" -le plus important- -> les cd_nomenclatures de cet nomenclature on été ordonné pour faire ce calcul)
+  Les champs "statut de reproduction expert" et "statut de reproduction calculé" situé dans l'ancienne table `pr_aigle.t_territoire` sont remplacé par un seul champs "id_nomenclature_statut_reproduction" qui est uniquement "saisi" par les gardes.
+  Le statut "calculé" est réalisé par le module "monitoring_year_synthese" (voir la vue `gn_monitoring.v_export_domaine_vital_repro_status` qui remet à plat les différents statuts de repro des visites de l'année mais va aussi chercher des informations dans les visites d'aire associé au domaine vital); Le statut de reproduction ne peux pas être "baissé" par les obs d'une visite, mais il peut être "augmenté". Par exemple si une visite note "jeune mort" ou "oeuf mort" alors le statut passe à "échec de la repro" meme si le statut de repro d'une visite sur le domaine vital avait mis "succès de la repro" (même comportement qu'en v1)
+
+Pour la migration on a donc dû créer une visite "bilan" par domaine vital et par année non issue de vrai contôle, datée arbitrairement au 1er novembre de l'année du
+territoire (avant le début de la saison suivante)
+
+Notes :
+
+Dans la V1 :
+Contrairement aux "activités" sur les aires, les "comportements" noté lors d'une "rencontre" sur un domaine vital n'entraine pas un véritable changement du statut de repro. Même si on note deun comportement "deux jeunes avec les adultes", le statut de repro est mis à "aucune conclusion possible". Sans la V2, on ne change le statut de repro à partir des visites sur les domaine vitaux. Il faut explicitement modifier le statut de repro pour que celui-ci s'affiche en couleur sur la carte
 
 ### Problème de non-unicité des domaines vitaux
 
@@ -50,15 +71,6 @@ plus la surface de l'ancien domaine).
 
 Cas particuliers identifiés dans `aigle_aire/migration/README.md`) :
 
-### La visite "bilan" pour le statut de reproduction (domaine_vital)
-
-`pr_aigle.t_territoires` a deux statuts de reproduction par territoire et par année :
-`id_statut_repro_expert` et `id_statut_repro_calcul`. Le modèle générique
-`gn_monitoring` ne permet pas de stocker cette info au niveau du site (une seule
-géométrie/entité par site, pas de possibilité de stocké des variables "temporelles" ).
-On a donc dû créer une visite "bilan" par domaine vital et par année non issue de vrai contôle, datée arbitrairement au 1er novembre de l'année du
-territoire (avant le début de la saison suivante)
-
 ### Rattachement aire ↔ domaine vital (`id_base_site_domaine_vital`)
 
 Le module "aigle" historique calcul un statut de reproduction automatique à partir des visites et des comportements notés sur les aire. Dans la v2 on a perdu tout lien entre les domaine vitaux et les aire. On a donc du refaire ce lien via le champs additionnel `id_base_site_domaine_vital` stocké sur les aires
@@ -71,22 +83,4 @@ Cette correspondance a été faire à partir de `pr_aigle.cor_aire_territoire` e
 
 ### Trigger de synchronisation du statut de reproduction
 
-Pour garder la fonctionnalité de calcul automatique du statut de reproduction à partir des données de visite d'aire, un trigger a été rajouté sur la table `gn_monitoring.t_visit_complements`
-
-- `trg_aigle_visit_statut_repro` (AFTER INSERT OR UPDATE ON
-  `gn_monitoring.t_visit_complements`) ne s'exécute que pour les visites du module
-  aigle.
-- Il retrouve le domaine vital de l'aire via `t_site_complements.data->>
-'id_base_site_domaine_vital'`
-- Il calcule le statut de reproduction induit par la visite : le plus élevé parmi les
-  activités cochées (via la table de correspondance
-  `gn_monitoring.bib_correspondance_activite_statut_repro`, qui reprend les mêmes
-  codes `0`..`9` que l'ancien `pr_aigle.bib_statut_reproduction`) et les champs de
-  comptage (`nb_jeune_blanc`/`nb_jeune_noir` > 0 ⇒ au moins "reproduction en cours" ;
-  `nb_jeune_envole` = 1 ou ≥ 2 ⇒ "1/2 jeune(s) envolé(s)").
-- Il compare ce statut au meilleur statut déjà connu pour ce domaine vital sur la même
-  saison (année de la visite) : si le statut de reproduction est "supérieur" au statut existant, on crée
-  une nouvelle visite sur le domaine_vital. Cette visite a un commentaire spécifique qui dit qu'elle a été créé automatiquement et ne contient aucun "observateur"
-
-Dans le V1 :
-Contrairement aux "activités" sur les aires, les "comportements" noté lors d'une "rencontre" sur un domaine vital n'entraine pas un véritable changement du statut de repro. Même si on note deun comportement "deux jeunes avec les adultes", le statut de repro est mis à "aucune conclusion possible". Sans la V2, on ne change pas automatiquement via trigger le statut de repro à partir des visites sur les domaine vitaux. Il faut explicitement modifier le statut de repro pour que celui-ci s'affiche en couleur sur la carte
+Pour garder le lien entre les sites et les domaines vitaux (utile pour calculer le statut de repro à partir des visites sur les aires), un trigger est déclenché à l'insertion ou à la modification de la géométrie du site ( -> voir `gn_monitoring.fct_trg_maj_domaine_vital_aire()`)

@@ -9,8 +9,7 @@
     "nb_jeune_blanc",
     "nb_jeune_noir",
     "nb_jeune_envole",
-    "comments",
-    "id_nomenclature_reprodution_status"
+    "comments"
   ],
   "display_list": ["visit_date_min", "observers", "activite_aire"],
   "label": "Contrôle",

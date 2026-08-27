@@ -1,0 +1,30 @@
+{
+  "sorts": [
+    {
+      "prop": "base_site_name",
+      "dir": "asc"
+    }
+  ],
+  "filters": {},
+  "label": "Aire de rapace",
+  "label_list": "Aires de rapace",
+  "genre": "F",
+  "geometry_type": "Point",
+  "display_properties": [
+    "id_inventor",
+    "base_site_name",
+    "base_site_code",
+    "base_site_description",
+    "first_use_date",
+    "types_site"
+  ],
+  "display_list": ["base_site_name", "types_site", "nb_visits"],
+  "specific": {
+    "types_site": {
+      "default": [
+        { "id_nomenclature_type_site": 1014 },
+        { "id_nomenclature_type_site": 977 }
+      ]
+    }
+  }
+}

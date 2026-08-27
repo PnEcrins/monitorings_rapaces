@@ -1,0 +1,60 @@
+{
+  "types": [
+    {
+      "mnemonique": "STATUT_REPRO_GYPA",
+      "label_default": "Statut de reproduction du gypaète",
+      "definition_default": "Statut de reproduction du gypaète"
+    }
+  ],
+  "nomenclatures": [
+    {
+      "type": "TYPE_SITE",
+      "cd_nomenclature": "AIRE_GYPA",
+      "mnemonique": "Aire de gypaète",
+      "label_default": "Aire de gypaète",
+      "definition_default": "Aire de gypaète"
+    },
+    {
+      "type": "STATUT_REPRO_GYPA",
+      "cd_nomenclature": "REPRODUCTION_EN_COURS",
+      "mnemonique": "Reproduction en cours",
+      "label_default": "Reproduction en cours",
+      "definition_default": "Reproduction en cours"
+    },
+    {
+      "type": "STATUT_REPRO_GYPA",
+      "cd_nomenclature": "SUCCÈS_DE_LA_REPRODUCTION",
+      "mnemonique": "Succès de la reproduction",
+      "label_default": "Succès de la reproduction",
+      "definition_default": "Succès de la reproduction"
+    },
+    {
+      "type": "STATUT_REPRO_GYPA",
+      "cd_nomenclature": "ÉCHEC",
+      "mnemonique": "Échec",
+      "label_default": "Échec",
+      "definition_default": "Échec"
+    },
+    {
+      "type": "STATUT_REPRO_GYPA",
+      "cd_nomenclature": "AUCUNE_ACTIVITÉ_CONSTATÉE",
+      "mnemonique": "Aucune activité constatée",
+      "label_default": "Aucune activité constatée",
+      "definition_default": "Aucune activité constatée"
+    },
+    {
+      "type": "STATUT_REPRO_GYPA",
+      "cd_nomenclature": "PAS_DE_CONCLUSION_POSSIBLE",
+      "mnemonique": "Pas de conclusion possible",
+      "label_default": "Pas de conclusion possible",
+      "definition_default": "Pas de conclusion possible"
+    },
+    {
+      "type": "STATUT_REPRO_GYPA",
+      "cd_nomenclature": "PAS_DE_REPRODUCTION_CONSTATÉE",
+      "mnemonique": "Pas de reproduction constatée",
+      "label_default": "Pas de reproduction constatée",
+      "definition_default": "Pas de reproduction constatée"
+    }
+  ]
+}

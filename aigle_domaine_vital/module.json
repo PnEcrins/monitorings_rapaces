@@ -3,7 +3,12 @@
   "module_desc": "Suivi de la reproduction de l'aigle royage - entrée domaine vital",
   "display_properties": ["module_label", "module_desc"],
   "export_csv": [
-    { "label": "Observations", "type": "csv", "method": "observations" },
-    { "label": "Sites", "type": "csv", "method": "sites" }
+    { "label": "Contrôles", "type": "csv", "method": "visits" },
+    { "label": "Sites", "type": "csv", "method": "sites" },
+    {
+      "label": "Domaines vitaux avec bilan annuel",
+      "type": "csv",
+      "method": "sites_bilan_annuel"
+    }
   ]
 }

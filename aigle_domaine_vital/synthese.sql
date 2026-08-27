@@ -1,2 +1,0 @@
-Modules monitoring aigle ======================== En 2026 le PNE migre son ancienne application aigle vers le module monitoring. Pour répondre au besoin du protocole (saisie de visites aux niveau des domaines vitaux et des aires),
-                                                                                                                                                            deux sous-modules monitoring. Ce répo contient les configurations et migrations de données des deux sous modules.

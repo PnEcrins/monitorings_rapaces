@@ -1,0 +1,9 @@
+{
+  "module_label": "Rapace",
+  "module_desc": "Veille territoriale des aires de rapaces (hors gypaète et aigle)",
+  "display_properties": ["module_label", "module_desc"],
+  "export_csv": [
+    { "label": "Visites", "type": "csv", "method": "visits" },
+    { "label": "Sites", "type": "csv", "method": "sites" }
+  ]
+}
