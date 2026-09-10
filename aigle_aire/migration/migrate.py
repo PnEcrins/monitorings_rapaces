@@ -16,19 +16,22 @@ from sqlalchemy import text
 from geoalchemy2.elements import WKTElement
 
 from geonature import create_app
+from pypnusershub.db.models import User
 from geonature.utils.env import DB
 from geonature.core.gn_monitoring.models import BibTypeSite
 from gn_module_monitoring.monitoring.models import TMonitoringSites, TMonitoringVisits
-from pypnusershub.db.models import User
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 logger = logging.getLogger("migrate_monitoring")
 
-ID_MODULE_AIGLE = 192
-ID_TYPE_SITE_AIRE_AIGLE = 977  # ref_nomenclatures.t_nomenclatures : TYPE_SITE / AIRE_AIGLE
+ID_MODULE_AIGLE = None
+ID_TYPE_SITE_AIRE_AIGLE = None
 
-ID_MODULE_DOMAINE_VITAL = 509
-ID_TYPE_SITE_DOMAINE_VITAL = 978  # ref_nomenclatures.t_nomenclatures : TYPE_SITE / DOMAINE_VITAL
+ID_MODULE_DOMAINE_VITAL = None
+ID_TYPE_SITE_DOMAINE_VITAL = None
+
+# Utilisateurs par défaut pour remplir les champs observateur et digitizer (dans le schéma pr_aigle, certain id_role ne pointe vers aucun utilisateurs rééls)
+DEFAULT_USER = 1251
 
 # Tables de nomenclatures pr_aigle à faire correspondre aux nomenclatures
 # ref_nomenclatures du même type, par libellé (label_default)
@@ -156,12 +159,56 @@ def load_existing_site_map(old_id_key):
     return {row.old_id: row.id_base_site for row in rows}
 
 
-def load_users(id_roles):
-    id_roles = {id_role for id_role in id_roles if id_role is not None}
-    if not id_roles:
-        return {}
-    users = DB.session.query(User).filter(User.id_role.in_(id_roles)).all()
-    return {user.id_role: user for user in users}
+def user_exists(id_role):
+    """Vérifie si un utilisateur existe dans la base."""
+    if id_role is None:
+        return False
+    return DB.session.execute(
+        text("SELECT 1 FROM utilisateurs.t_roles WHERE id_role = :id"),
+        {"id": id_role}
+    ).scalar() is not None
+
+
+def load_observer(id_role):
+    """
+    Retourne l'utilisateur (User) correspondant à id_role, ou None s'il n'existe pas.
+    Contrairement à id_digitiser/id_inventor (qui retombent sur DEFAULT_USER),
+    un observateur introuvable est simplement ignoré (juste loggé).
+    """
+    if id_role is None:
+        return None
+    user = DB.session.get(User, id_role)
+    if user is None:
+        logger.warning(f"Observateur {id_role} introuvable, ignoré des observers")
+    return user
+
+
+def load_module_id(module_code):
+    """Charge l'ID d'un module monitoring à partir de son code mnémonique."""
+    module_id = DB.session.execute(
+        text("SELECT id_module FROM gn_commons.t_modules WHERE module_code = :code"),
+        {"code": module_code},
+    ).scalar()
+    if module_id is None:
+        raise RuntimeError(f"Module '{module_code}' introuvable dans gn_commons.t_modules")
+    return module_id
+
+
+def load_nomenclature_type_id(type_code):
+    """Charge l'ID de nomenclature d'un type de site à partir de son code mnémonique."""
+    type_id = DB.session.execute(
+        text(
+            """
+            SELECT id_nomenclature FROM ref_nomenclatures.t_nomenclatures n
+            JOIN ref_nomenclatures.bib_nomenclatures_types t ON t.id_type = n.id_type
+            WHERE t.mnemonique = 'TYPE_SITE' AND n.cd_nomenclature = :code
+            """
+        ),
+        {"code": type_code},
+    ).scalar()
+    if type_id is None:
+        raise RuntimeError(f"Nomenclature TYPE_SITE/{type_code} introuvable")
+    return type_id
 
 
 # --------------------------------------------------------------------------------
@@ -253,7 +300,7 @@ def resolve_aire_domaine_vital_sites(reference_year):
 
 
 def build_visit_aigle(
-    visite, id_dataset, users, activities_by_visite, activity_mapping, count_activity_mapping
+    visite, id_dataset, activities_by_visite, activity_mapping, count_activity_mapping
 ):
     old_id = visite["id_visite"]
     old_activities = activities_by_visite.get(old_id, [])
@@ -275,15 +322,18 @@ def build_visit_aigle(
             field, count = match
             counts[field] = max(counts[field] or 0, count)
 
-    observer_ids = {visite["id_observateur"]}
-    if visite["id_redacteur"]:
-        observer_ids.add(visite["id_redacteur"])
-    observers = [users[i] for i in observer_ids if i in users]
+    id_digitiser = visite["id_redacteur"] or visite["id_observateur"]
+    if not user_exists(id_digitiser):
+        logger.warning(f"Utilisateur {id_digitiser} introuvable, utilisation de DEFAULT_USER")
+        id_digitiser = DEFAULT_USER
+
+    observer = load_observer(visite["id_observateur"])
+    observers = [observer] if observer else []
 
     return TMonitoringVisits(
         id_dataset=id_dataset,
         id_module=ID_MODULE_AIGLE,
-        id_digitiser=visite["id_redacteur"] or visite["id_observateur"],
+        id_digitiser=id_digitiser,
         visit_date_min=visite["date_visite"],
         visit_date_max=visite["date_visite"],
         comments=visite["remarques"],
@@ -320,9 +370,14 @@ def build_site_aigle(aire, bib_type_site, visits, nomenclature_mappings, id_base
     first_use_date = date(aire["annee_decouverte"], 1, 1) if aire["annee_decouverte"] else None
     site_name = aire["nom_aire"] or aire["num_aire"] or f"Aire {old_id}"
 
+    id_observateur = aire["id_observateur"]
+    if not user_exists(id_observateur):
+        logger.warning(f"Utilisateur {id_observateur} introuvable, utilisation de DEFAULT_USER")
+        id_observateur = DEFAULT_USER
+
     return TMonitoringSites(
-        id_inventor=aire["id_observateur"],
-        id_digitiser=aire["id_observateur"],
+        id_inventor=id_observateur,
+        id_digitiser=id_observateur,
         base_site_name=site_name,
         base_site_code=aire["num_aire"],
         first_use_date=first_use_date,
@@ -372,11 +427,6 @@ def migrate_aigle(id_dataset):
     for visite in visites:
         visites_by_aire.setdefault(visite["id_aire"], []).append(visite)
 
-    all_observer_ids = {v["id_observateur"] for v in visites} | {
-        v["id_redacteur"] for v in visites if v["id_redacteur"]
-    }
-    users = load_users(all_observer_ids)
-
     n_sites_created = 0
     n_visits_created = 0
 
@@ -386,7 +436,7 @@ def migrate_aigle(id_dataset):
 
         new_visits = [
             build_visit_aigle(
-                visite, id_dataset, users, activities_by_visite,
+                visite, id_dataset, activities_by_visite,
                 nomenclature_mappings["activity"], count_activity_mapping,
             )
             for visite in visites_by_aire.get(old_id_aire, [])
@@ -499,8 +549,8 @@ def fetch_territoire_site_matches(reference_year):
 
 
 def build_visit_domaine_vital(
-    rencontre, id_dataset, users, comportements_by_rencontre,
-    comportement_mapping, count_comportement_mapping,
+    rencontre, id_dataset, comportements_by_rencontre,
+    comportement_mapping, count_comportement_mapping
 ):
     old_id = rencontre["id_rencontre"]
     old_comportements = comportements_by_rencontre.get(old_id, [])
@@ -520,15 +570,18 @@ def build_visit_domaine_vital(
             field, count = match
             counts[field] = max(counts[field] or 0, count)
 
-    observer_ids = {rencontre["id_observateur"]}
-    if rencontre["id_redacteur"]:
-        observer_ids.add(rencontre["id_redacteur"])
-    observers = [users[i] for i in observer_ids if i in users]
+    id_digitiser = rencontre["id_redacteur"] or rencontre["id_observateur"]
+    if not user_exists(id_digitiser):
+        logger.warning(f"Utilisateur {id_digitiser} introuvable, utilisation de DEFAULT_USER")
+        id_digitiser = DEFAULT_USER
+
+    observer = load_observer(rencontre["id_observateur"])
+    observers = [observer] if observer else []
 
     return TMonitoringVisits(
         id_dataset=id_dataset,
         id_module=ID_MODULE_DOMAINE_VITAL,
-        id_digitiser=rencontre["id_redacteur"] or rencontre["id_observateur"],
+        id_digitiser=id_digitiser,
         visit_date_min=rencontre["date_rencontre"],
         visit_date_max=rencontre["date_rencontre"],
         comments=rencontre["remarques"],
@@ -591,6 +644,13 @@ def build_site_domaine_vital(
         else f"Territoire {old_id}"
     )
 
+    if inventor_id and not user_exists(inventor_id):
+        logger.warning(f"Utilisateur {inventor_id} introuvable, utilisation de DEFAULT_USER")
+        inventor_id = DEFAULT_USER
+    if digitiser_id and not user_exists(digitiser_id):
+        logger.warning(f"Utilisateur {digitiser_id} introuvable, utilisation de DEFAULT_USER")
+        digitiser_id = DEFAULT_USER
+
     return TMonitoringSites(
         id_inventor=inventor_id,
         id_digitiser=digitiser_id,
@@ -640,11 +700,6 @@ def migrate_domaine_vital(id_dataset):
         if id_site is not None:
             rencontres_by_site.setdefault(id_site, []).append(rencontre)
 
-    all_observer_ids = {r["id_observateur"] for r in rencontres} | {
-        r["id_redacteur"] for r in rencontres if r["id_redacteur"]
-    }
-    users = load_users(all_observer_ids)
-
     n_sites_created = 0
     n_visits_created = 0
     n_bilans_created = 0
@@ -656,7 +711,7 @@ def migrate_domaine_vital(id_dataset):
 
         new_visits = [
             build_visit_domaine_vital(
-                rencontre, id_dataset, users, comportements_by_rencontre,
+                rencontre, id_dataset, comportements_by_rencontre,
                 comportement_mapping, count_comportement_mapping,
             )
             for rencontre in site_rencontres
@@ -713,6 +768,7 @@ def main():
         "--id-dataset", type=int, required=True,
         help="id_dataset (gn_meta.t_datasets) à associer aux visites migrées",
     )
+
     parser.add_argument(
         "--dry-run", action="store_true",
         help="Exécute la migration puis annule la transaction (aucune écriture en base)",
@@ -721,6 +777,15 @@ def main():
 
     app = create_app()
     with app.app_context():
+        global ID_MODULE_AIGLE, ID_TYPE_SITE_AIRE_AIGLE
+        global ID_MODULE_DOMAINE_VITAL, ID_TYPE_SITE_DOMAINE_VITAL
+        global DEFAULT_USER
+
+        ID_MODULE_AIGLE = load_module_id("aigle")
+        ID_TYPE_SITE_AIRE_AIGLE = load_nomenclature_type_id("AIRE_AIGLE")
+        ID_MODULE_DOMAINE_VITAL = load_module_id("domaine_vital")
+        ID_TYPE_SITE_DOMAINE_VITAL = load_nomenclature_type_id("DOMAINE_VITAL")
+
         try:
             MIGRATIONS[args.module](args.id_dataset)
             if args.dry_run:

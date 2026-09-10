@@ -22,8 +22,6 @@ SELECT
   a.jname ->> 'COM'::text AS commune,
   a.jname ->> 'SEC'::text AS secteur
 FROM gn_monitoring.t_base_sites s
-  JOIN gn_monitoring.cor_site_module csm ON csm.id_base_site = s.id_base_site
-  JOIN gn_commons.t_modules mod ON mod.id_module = csm.id_module AND mod.module_code = 'aigle'
   LEFT JOIN gn_monitoring.t_site_complements tsc ON tsc.id_base_site = s.id_base_site
   LEFT JOIN utilisateurs.t_roles inv ON inv.id_role = s.id_inventor
   LEFT JOIN ref_nomenclatures.t_nomenclatures tn_topo ON tn_topo.id_nomenclature = (tsc.data ->> 'id_nomenclature_topology')::integer
@@ -33,7 +31,7 @@ FROM gn_monitoring.t_base_sites s
   LEFT JOIN LATERAL (
     SELECT string_agg(DISTINCT tn.label_default, ', ') AS type_site
     FROM gn_monitoring.cor_site_type cst
-      JOIN ref_nomenclatures.t_nomenclatures tn ON tn.id_nomenclature = cst.id_nomenclature_type_site
+      JOIN ref_nomenclatures.t_nomenclatures tn ON tn.id_nomenclature = cst.id_type_site
     WHERE cst.id_base_site = s.id_base_site
   ) ts ON true
   LEFT JOIN LATERAL (
@@ -49,13 +47,18 @@ FROM gn_monitoring.t_base_sites s
       GROUP BY sa.id_base_site, ta.type_code
     ) d_1
   ) a ON true
+ WHERE (EXISTS ( SELECT 1
+           FROM gn_monitoring.cor_site_type cst
+             JOIN gn_monitoring.cor_module_type cmt ON cmt.id_type_site = cst.id_type_site
+             JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code::text = 'domaine_vital'::text
+          WHERE cst.id_base_site = s.id_base_site));
 ;
 
 -- Export des contrôles
 CREATE OR REPLACE VIEW gn_monitoring.v_export_aigle_visits
 AS
 SELECT
-  s.id_base_site AS id_site,
+  s.id_base_site AS id_base_site,
   s.base_site_name AS nom_site,
   tbv.id_base_visit AS id_visite,
   tbv.visit_date_min AS date_visite,

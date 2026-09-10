@@ -4,6 +4,11 @@
   "display_properties": ["module_label", "module_desc"],
   "export_csv": [
     { "label": "Visites", "type": "csv", "method": "visits" },
-    { "label": "Sites", "type": "csv", "method": "sites" }
+    { "label": "Sites", "type": "csv", "method": "sites" },
+    {
+      "label": "Sites tous rapaces confondu",
+      "type": "csv",
+      "method": "activite_aire"
+    }
   ]
 }

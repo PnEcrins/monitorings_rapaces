@@ -12,8 +12,6 @@ SELECT
   a.jname ->> 'COM'::text AS commune,
   a.jname ->> 'SEC'::text AS secteur
 FROM gn_monitoring.t_base_sites s
-  JOIN gn_monitoring.cor_site_module csm ON csm.id_base_site = s.id_base_site
-  JOIN gn_commons.t_modules mod ON mod.id_module = csm.id_module AND mod.module_code = 'rapace'
   LEFT JOIN LATERAL (
     SELECT string_agg(DISTINCT tn.label_default, ', ') AS type_site
     FROM gn_monitoring.cor_site_type cst
@@ -33,6 +31,17 @@ FROM gn_monitoring.t_base_sites s
       GROUP BY sa.id_base_site, ta.type_code
     ) d_1
   ) a ON true
+  -- Le lien site <-> module ne passe pas par cor_site_module (vide dans ce
+  -- jeu de données) mais par le type de site : cor_site_type (site -> type)
+  -- puis cor_module_type (type -> module), comme le fait
+  -- TMonitoringSites.modules côté ORM (gn_module_monitoring/monitoring/models.py).
+  WHERE EXISTS (
+    SELECT 1
+    FROM gn_monitoring.cor_site_type cst
+      JOIN gn_monitoring.cor_module_type cmt ON cmt.id_type_site = cst.id_type_site
+      JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'rapace'
+    WHERE cst.id_base_site = s.id_base_site
+  )
 ;
 
 -- Export des visites

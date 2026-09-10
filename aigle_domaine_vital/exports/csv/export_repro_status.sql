@@ -11,11 +11,18 @@
 --   - le statut_reproduction renseigné directement sur les visites du
 --     domaine vital (CTE best_status) ;
 --   - le statut induit par les visites du module aigle (aires) rattachées à
---     ce domaine vital via t_site_complements.data->>'id_base_site_domaine_vital'
---     (CTE aire_status), qui reprend la logique de l'ancien trigger
+--     ce domaine vital via gn_monitoring.cor_aire_domaine_vital_year (CTE
+--     aire_status), qui reprend la logique de l'ancien trigger
 --     gn_monitoring.fct_trg_aigle_visit_statut_repro (supprimé) : activités
 --     cochées (bib_correspondance_activite_statut_repro) + dénombrement de
 --     jeunes (nb_jeune_blanc, nb_jeune_noir, nb_jeune_envole).
+--
+-- Un domaine vital pouvant changer de géométrie au fil du temps, sa
+-- correspondance avec les aires (cor_aire_domaine_vital_year) et sa
+-- géométrie exportée (cor_domaine_vitaux_year) sont toutes deux recherchées
+-- "à la date" : la dernière ligne connue dont l'année est <= à l'année
+-- concernée (ces deux tables n'ont pas forcément une ligne par année,
+-- seulement quand ça change).
 
 DROP VIEW IF EXISTS gn_monitoring.v_export_domaine_vital_repro_status;
 CREATE OR REPLACE VIEW gn_monitoring.v_export_domaine_vital_repro_status
@@ -54,7 +61,7 @@ best_status AS (
 -- domaine vital via id_base_site_domaine_vital.
 aire_visit_code AS (
   SELECT
-    (tsc.data ->> 'id_base_site_domaine_vital')::integer AS id_base_site,
+    dv.id_base_site_domaine_vital AS id_base_site,
     EXTRACT(YEAR FROM bv.visit_date_min)::integer AS annee,
     GREATEST(
       COALESCE(act.code, 0),
@@ -76,7 +83,18 @@ aire_visit_code AS (
   FROM gn_monitoring.t_base_visits bv
     JOIN gn_commons.t_modules m ON m.id_module = bv.id_module AND m.module_code = 'aigle'
     JOIN gn_monitoring.t_visit_complements vc ON vc.id_base_visit = bv.id_base_visit
-    JOIN gn_monitoring.t_site_complements tsc ON tsc.id_base_site = bv.id_base_site
+    -- Domaine vital rattaché à cette aire à la date de la visite : la
+    -- dernière correspondance connue (cor_aire_domaine_vital_year) dont
+    -- l'année est <= l'année de la visite. JOIN LATERAL (et non LEFT) pour
+    -- exclure les visites d'une aire sans correspondance connue à cette date.
+    JOIN LATERAL (
+      SELECT cadvy.id_base_site_domaine_vital
+      FROM gn_monitoring.cor_aire_domaine_vital_year cadvy
+      WHERE cadvy.id_base_site_aire = bv.id_base_site
+        AND cadvy.year <= EXTRACT(YEAR FROM bv.visit_date_min)::integer
+      ORDER BY cadvy.year DESC, cadvy.id DESC
+      LIMIT 1
+    ) dv ON true
     -- Statut induit par les activités cochées sur ce contrôle.
     LEFT JOIN LATERAL (
       SELECT MAX(bc.cd_nomenclature_statut_repro::integer) AS code
@@ -90,7 +108,6 @@ aire_visit_code AS (
         JOIN gn_monitoring.bib_correspondance_activite_statut_repro bc
           ON bc.cd_nomenclature_activite = n.cd_nomenclature
     ) act ON true
-  WHERE (tsc.data ->> 'id_base_site_domaine_vital') IS NOT NULL
 ),
 -- Statut le plus élevé parmi les visites d'aire d'un même domaine vital et
 -- d'une même année (0 = aucune visite d'aire exploitable pour cette année).
@@ -106,8 +123,7 @@ sites AS (
     s.id_inventor,
     s.base_site_name,
     s.base_site_code,
-    s.first_use_date,
-    st_asgeojson(s.geom) AS geom
+    s.first_use_date
   FROM gn_monitoring.t_base_sites s
   WHERE EXISTS (
     -- Le lien site <-> module ne passe pas par cor_site_module (vide dans ce
@@ -147,7 +163,7 @@ SELECT
   sites.id_base_site,
   sites.base_site_name,
   sites.base_site_code,
-  sites.geom,
+  st_asgeojson(g.geom) AS geom,
   a.jname ->> 'SEC'::text AS secteur,
   sc.annee,
   sites.first_use_date as "date_découverte",
@@ -157,6 +173,20 @@ SELECT
 FROM statut_calcule sc
   JOIN sites ON sites.id_base_site = sc.id_base_site
   JOIN statut_nomenclature sn ON sn.cd_nomenclature = sc.code::text
+  -- Géométrie du domaine vital pour l'année exportée : la dernière géométrie
+  -- connue (cor_domaine_vitaux_year) dont l'année est <= sc.annee. Si la
+  -- géométrie n'a pas changé cette année-là (pas de ligne pour sc.annee), on
+  -- retombe automatiquement sur celle de la dernière année où elle a changé.
+  -- g.geom n'est NULL que pour une année antérieure à toute géométrie connue
+  -- (domaine vital pas encore créé à cette date).
+  LEFT JOIN LATERAL (
+    SELECT cdvy.geom
+    FROM gn_monitoring.cor_domaine_vitaux_year cdvy
+    WHERE cdvy.id_base_site = sites.id_base_site
+      AND cdvy.year <= sc.annee
+    ORDER BY cdvy.year DESC, cdvy.id DESC
+    LIMIT 1
+  ) g ON true
   -- LEFT JOIN : un site sans inventeur (id_inventor NULL) ne doit pas
   -- disparaître de l'export.
   LEFT JOIN utilisateurs.t_roles r ON r.id_role = sites.id_inventor

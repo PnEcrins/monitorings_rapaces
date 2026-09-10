@@ -67,10 +67,6 @@ sites AS (
     st_asgeojson(s.geom) AS geom
   FROM gn_monitoring.t_base_sites s
   WHERE EXISTS (
-    -- Le lien site <-> module ne passe pas par cor_site_module (vide dans ce
-    -- jeu de données) mais par le type de site : cor_site_type (site -> type)
-    -- puis cor_module_type (type -> module), comme le fait TMonitoringSites.modules
-    -- côté ORM (gn_module_monitoring/monitoring/models.py).
     SELECT 1
     FROM gn_monitoring.cor_site_type cst
       JOIN gn_monitoring.cor_module_type cmt ON cmt.id_type_site = cst.id_type_site

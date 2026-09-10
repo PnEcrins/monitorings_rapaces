@@ -36,17 +36,7 @@
       "code_nomenclature_type": "ACTIVITE_AIRE_RAPACES",
       "type_util": "nomenclature",
       "multi_select": true,
-      "required": true,
-      "value": [
-        {
-          "code_nomenclature_type": "ACTIVITE_AIRE_RAPACES",
-          "cd_nomenclature": "AIRE_VIDE"
-        },
-        {
-          "code_nomenclature_type": "ACTIVITE_AIRE_RAPACES",
-          "cd_nomenclature": "COUVAISON"
-        }
-      ]
+      "required": true
     },
     "statut_reproduction": {
       "type_widget": "nomenclature",

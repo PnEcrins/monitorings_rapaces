@@ -76,8 +76,6 @@ SELECT
   s.base_site_description AS description_aire
 FROM gn_monitoring.t_base_sites s
 JOIN gn_monitoring.t_site_complements tsc ON s.id_base_site = tsc.id_base_site
-JOIN gn_monitoring.cor_site_module csm on s.id_base_site = csm.id_base_site
-JOIN gn_commons.t_modules mod on mod.id_module = csm.id_module  AND mod.module_code = 'nidif_gypa'
 LEFT JOIN LATERAL (
   SELECT d_1.id_base_site ,
     json_object_agg(d_1.type_code, d_1.o_name) AS jname,
@@ -95,3 +93,14 @@ LEFT JOIN LATERAL (
     ) d_1
   GROUP BY d_1.id_base_site
 ) a ON TRUE
+-- Le lien site <-> module ne passe pas par cor_site_module (vide dans ce jeu de
+-- données) mais par le type de site : cor_site_type (site -> type) puis
+-- cor_module_type (type -> module), comme le fait TMonitoringSites.modules
+-- côté ORM (gn_module_monitoring/monitoring/models.py).
+WHERE EXISTS (
+  SELECT 1
+  FROM gn_monitoring.cor_site_type cst
+    JOIN gn_monitoring.cor_module_type cmt ON cmt.id_type_site = cst.id_type_site
+    JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'nidif_gypa'
+  WHERE cst.id_base_site = s.id_base_site
+);

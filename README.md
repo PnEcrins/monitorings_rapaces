@@ -84,3 +84,5 @@ Cette correspondance a été faire à partir de `pr_aigle.cor_aire_territoire` e
 ### Trigger de synchronisation du statut de reproduction
 
 Pour garder le lien entre les sites et les domaines vitaux (utile pour calculer le statut de repro à partir des visites sur les aires), un trigger est déclenché à l'insertion ou à la modification de la géométrie du site ( -> voir `gn_monitoring.fct_trg_maj_domaine_vital_aire()`)
+
+Le script "migration.sql" contient ce trigger ainsi que des requêtes SQL nécessaire au fonctionnement des vues (utilisé pour le module 'monitoring-year-synthese')
