@@ -68,24 +68,31 @@ SELECT
     ref_nomenclatures.get_id_nomenclature('NAT_OBJ_GEO', 'St') AS id_nomenclature_geo_object_nature,
     v.id_nomenclature_grp_typ,
     v.id_nomenclature_tech_collect_campanule,
-    CASE WHEN c.total > 0 THEN ref_nomenclatures.get_id_nomenclature('OBJ_DENBR', 'IND') END
+    CASE WHEN c.total > 0 THEN ref_nomenclatures.get_id_nomenclature('OBJ_DENBR', 'IND')
+        ELSE gn_synthese.get_default_nomenclature_value('OBJ_DENBR') END
         AS id_nomenclature_obj_count,
-    CASE WHEN c.total > 0 THEN ref_nomenclatures.get_id_nomenclature('TYP_DENBR', 'Co') END
+    CASE WHEN c.total > 0 THEN ref_nomenclatures.get_id_nomenclature('TYP_DENBR', 'Co')
+        ELSE gn_synthese.get_default_nomenclature_value('TYP_DENBR') END
         AS id_nomenclature_type_count,
     ref_nomenclatures.get_id_nomenclature('STATUT_OBS', 'Pr') AS id_nomenclature_observation_status,
     ref_nomenclatures.get_id_nomenclature('STATUT_SOURCE', 'Te') AS id_nomenclature_source_status,
     ref_nomenclatures.get_id_nomenclature('TYP_INF_GEO', '1') AS id_nomenclature_info_geo_type,
-    CASE WHEN act.has_reproduction THEN ref_nomenclatures.get_id_nomenclature('STATUT_BIO', '3') END
+    CASE WHEN act.has_reproduction THEN ref_nomenclatures.get_id_nomenclature('STATUT_BIO', '3')
+        ELSE gn_synthese.get_default_nomenclature_value('STATUT_BIO') END
         AS id_nomenclature_bio_status,
-    CASE WHEN act.has_dead_young THEN ref_nomenclatures.get_id_nomenclature('ETA_BIO', '3') END
+    CASE WHEN act.has_dead_young THEN ref_nomenclatures.get_id_nomenclature('ETA_BIO', '3')
+        ELSE gn_synthese.get_default_nomenclature_value('ETA_BIO') END
         AS id_nomenclature_bio_condition,
-    act.id_nomenclature_behaviour,
+    -- COALESCE plutôt qu'un ELSE dans le CTE : couvre aussi les visites sans ligne dans activities (LEFT JOIN).
+    COALESCE(act.id_nomenclature_behaviour, gn_synthese.get_default_nomenclature_value('OCC_COMPORTEMENT'))
+        AS id_nomenclature_behaviour,
     -- Adulte si seul nb_adulte est renseigné, Juvénile si seuls les nb_jeune* le sont ;
     -- si adulte(s) ET jeune(s) sont tous les deux renseignés (stade mixte, pas de valeur
     -- STADE_VIE dédiée) ou si aucun des deux, on laisse la valeur par défaut de la synthèse.
     CASE
         WHEN c.has_adulte AND NOT c.has_jeune THEN ref_nomenclatures.get_id_nomenclature('STADE_VIE', '2')
         WHEN c.has_jeune AND NOT c.has_adulte THEN ref_nomenclatures.get_id_nomenclature('STADE_VIE', '3')
+        ELSE gn_synthese.get_default_nomenclature_value('STADE_VIE')
     END AS id_nomenclature_life_stage,
     c.total AS count_min,
     c.total AS count_max,
@@ -102,7 +109,8 @@ SELECT
     obs.observers,
     obs.ids_observers,
     v.id_digitiser,
-    v.comments AS comment_description,
+    NULLIF(concat_ws(' - ', NULLIF(v.comments, ''), CASE WHEN act.has_dead_young THEN 'jeune mort' END), '')
+        AS comment_description,
     COALESCE(vc.data, '{}'::jsonb) AS additional_data,
     -- ## Colonnes complémentaires utilisées par gn_module_monitoring / import_from_table,
     -- sans équivalent dans gn_synthese.synthese
