@@ -1,7 +1,7 @@
 -- gn_monitoring.v_synthese_aigle
 --
 -- Exécutée via `geonature monitoring install_monitoring_module aigle` (process_sql_files
--- appelle ce fichier avec le bind param :module_code = 'aigle').
+-- appelle ce fichier avec le bind param :module_code = 'aigle_aire').
 
 DROP VIEW IF EXISTS gn_monitoring.v_synthese_aigle;
 CREATE VIEW gn_monitoring.v_synthese_aigle AS

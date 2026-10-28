@@ -34,7 +34,7 @@ WITH visit_status AS (
     (vc.data ->> 'statut_reproduction')::integer AS id_nomenclature_statut_repro
   FROM gn_monitoring.t_base_visits bv
     JOIN gn_monitoring.t_visit_complements vc ON vc.id_base_visit = bv.id_base_visit
-    JOIN gn_commons.t_modules m ON m.id_module = bv.id_module AND m.module_code = 'domaine_vital'
+    JOIN gn_commons.t_modules m ON m.id_module = bv.id_module AND m.module_code = 'aigle_domaine_vital'
   WHERE (vc.data ->> 'statut_reproduction') IS NOT NULL
 ),
 -- Toutes les valeurs de la nomenclature de statut de reproduction, utilisée
@@ -81,7 +81,7 @@ aire_visit_code AS (
       END
     ) AS code
   FROM gn_monitoring.t_base_visits bv
-    JOIN gn_commons.t_modules m ON m.id_module = bv.id_module AND m.module_code = 'aigle'
+    JOIN gn_commons.t_modules m ON m.id_module = bv.id_module AND m.module_code = 'aigle_aire'
     JOIN gn_monitoring.t_visit_complements vc ON vc.id_base_visit = bv.id_base_visit
     -- Domaine vital rattaché à cette aire à la date de la visite : la
     -- dernière correspondance connue (cor_aire_domaine_vital_year) dont
@@ -134,7 +134,7 @@ sites AS (
     SELECT 1
     FROM gn_monitoring.cor_site_type cst
       JOIN gn_monitoring.cor_module_type cmt ON cmt.id_type_site = cst.id_type_site
-      JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'domaine_vital'
+      JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'aigle_domaine_vital'
     WHERE cst.id_base_site = s.id_base_site
   )
 ),

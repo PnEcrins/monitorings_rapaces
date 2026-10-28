@@ -2,8 +2,8 @@
 Usage :
     cd backend
     source venv/bin/activate
-    python media/monitorings/aigle/migration/migrate.py --module domaine_vital --id-dataset <ID_DATASET> [--dry-run]
-    python media/monitorings/aigle/migration/migrate.py --module aigle --id-dataset <ID_DATASET> [--dry-run]
+    python media/monitorings/aigle_aire/migration/migrate.py --module domaine_vital --id-dataset <ID_DATASET> [--dry-run]
+    python media/monitorings/aigle_aire/migration/migrate.py --module aigle --id-dataset <ID_DATASET> [--dry-run]
 
 Le script suppose une base cible vide (pas de site, ni de visite pour ces modules)
 """
@@ -781,9 +781,9 @@ def main():
         global ID_MODULE_DOMAINE_VITAL, ID_TYPE_SITE_DOMAINE_VITAL
         global DEFAULT_USER
 
-        ID_MODULE_AIGLE = load_module_id("aigle")
+        ID_MODULE_AIGLE = load_module_id("aigle_aire")
         ID_TYPE_SITE_AIRE_AIGLE = load_nomenclature_type_id("AIRE_AIGLE")
-        ID_MODULE_DOMAINE_VITAL = load_module_id("domaine_vital")
+        ID_MODULE_DOMAINE_VITAL = load_module_id("aigle_domaine_vital")
         ID_TYPE_SITE_DOMAINE_VITAL = load_nomenclature_type_id("DOMAINE_VITAL")
 
         try:

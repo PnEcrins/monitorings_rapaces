@@ -81,8 +81,8 @@ SELECT
 ref_nomenclatures.get_id_nomenclature(v.type_nomenc_mnemonique, v.cd_nomnclature),
 m.id_module
 FROM (
-  VALUES ('aigle', 'TYPE_SITE', 'AIRE_AIGLE' ),
-   ('domaine_vital', 'TYPE_SITE', 'DOMAINE_VITAL' ),
+  VALUES ('aigle_aire', 'TYPE_SITE', 'AIRE_AIGLE' ),
+   ('aigle_domaine_vital', 'TYPE_SITE', 'DOMAINE_VITAL' ),
    ('nidif_gypa', 'TYPE_SITE', 'AIRE_GYPA' ),
    ('rapace', 'TYPE_SITE', 'AIRE_RAPACE' )
 ) AS v ( module_code, type_nomenc_mnemonique, cd_nomnclature)
@@ -112,7 +112,7 @@ SELECT
 FROM gn_monitoring.t_site_complements tsc
 JOIN gn_monitoring.cor_site_type cst ON cst.id_base_site = tsc.id_base_site
 JOIN gn_monitoring.cor_module_type cmt ON cmt.id_type_site = cst.id_type_site
-JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'domaine_vital'
+JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'aigle_domaine_vital'
 CROSS JOIN LATERAL jsonb_array_elements_text(tsc.data -> 'old_ids_territoire') AS old_id(id_territoire)
 JOIN pr_aigle.t_territoires ter ON ter.id_territoire = old_id.id_territoire::integer
 WHERE tsc.data ? 'old_ids_territoire';
@@ -189,7 +189,7 @@ BEGIN
         SELECT 1
         FROM gn_monitoring.cor_site_type cst
           JOIN gn_monitoring.cor_module_type cmt ON cmt.id_type_site = cst.id_type_site
-          JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'aigle'
+          JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'aigle_aire'
         WHERE cst.id_base_site = a.id_base_site
       )
       AND ST_Contains(rec.geom, a.geom)
@@ -278,7 +278,7 @@ BEGIN
     SELECT 1
     FROM gn_monitoring.cor_site_type cst
       JOIN gn_monitoring.cor_module_type cmt ON cmt.id_type_site = cst.id_type_site
-      JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'domaine_vital'
+      JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'aigle_domaine_vital'
     WHERE cst.id_base_site = v_id_base_site_domaine_vital
   ) THEN
     RETURN NEW;
@@ -297,7 +297,7 @@ BEGIN
         SELECT 1
         FROM gn_monitoring.cor_site_type cst
           JOIN gn_monitoring.cor_module_type cmt ON cmt.id_type_site = cst.id_type_site
-          JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'domaine_vital'
+          JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'aigle_domaine_vital'
         WHERE cst.id_base_site = dv.id_base_site
       )
       AND ST_Overlaps(dv.geom, v_geom)
@@ -322,7 +322,7 @@ BEGIN
       SELECT 1
       FROM gn_monitoring.cor_site_type cst
         JOIN gn_monitoring.cor_module_type cmt ON cmt.id_type_site = cst.id_type_site
-        JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'aigle'
+        JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'aigle_aire'
       WHERE cst.id_base_site = a.id_base_site
     )
     AND ST_Contains(v_geom, a.geom)
@@ -369,7 +369,7 @@ BEGIN
     SELECT 1
     FROM gn_monitoring.cor_site_type cst
       JOIN gn_monitoring.cor_module_type cmt ON cmt.id_type_site = cst.id_type_site
-      JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'aigle'
+      JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'aigle_aire'
     WHERE cst.id_base_site = v_id_base_site_aire
   ) THEN
     RETURN NEW;
@@ -386,7 +386,7 @@ BEGIN
       SELECT 1
       FROM gn_monitoring.cor_site_type cst
         JOIN gn_monitoring.cor_module_type cmt ON cmt.id_type_site = cst.id_type_site
-        JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'domaine_vital'
+        JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code = 'aigle_domaine_vital'
       WHERE cst.id_base_site = dv.id_base_site
     )
     AND ST_Contains(dv.geom, v_geom);

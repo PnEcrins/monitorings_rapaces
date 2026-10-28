@@ -11,7 +11,7 @@ AS WITH sites AS (
              JOIN gn_monitoring.cor_site_type cst ON cst.id_base_site = s.id_base_site
              JOIN gn_monitoring.cor_module_type cmt ON cmt.id_type_site = cst.id_type_site
              JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module
-          WHERE mod.module_code::text = ANY (ARRAY['aigle'::character varying, 'nidif_gypa'::character varying, 'rapace'::character varying]::text[])
+          WHERE mod.module_code::text = ANY (ARRAY['aigle_aire'::character varying, 'nidif_gypa'::character varying, 'rapace'::character varying]::text[])
         ), aigle_activite_type AS (
          SELECT bib_nomenclatures_types.id_type
            FROM ref_nomenclatures.bib_nomenclatures_types
@@ -29,7 +29,7 @@ AS WITH sites AS (
                            FROM aigle_activite_type))
                   WHERE n.cd_nomenclature::text <> ALL (ARRAY['AIRE_VIDE'::character varying, 'AUCUNE_ACTIVITÉ_CONSTATÉE'::character varying, 'AUTRE_(VOIR_REMARQUES)'::character varying]::text[]))) OR COALESCE((vc.data ->> 'nb_adulte'::text)::integer, 0) > 0 OR COALESCE((vc.data ->> 'nb_jeune_blanc'::text)::integer, 0) > 0 OR COALESCE((vc.data ->> 'nb_jeune_noir'::text)::integer, 0) > 0 OR COALESCE((vc.data ->> 'nb_jeune_envole'::text)::integer, 0) > 0) AS activite_aire
            FROM gn_monitoring.t_base_visits bv
-             JOIN gn_commons.t_modules m ON m.id_module = bv.id_module AND m.module_code::text = 'aigle'::text
+             JOIN gn_commons.t_modules m ON m.id_module = bv.id_module AND m.module_code::text = 'aigle_aire'::text
              JOIN gn_monitoring.t_visit_complements vc ON vc.id_base_visit = bv.id_base_visit
           GROUP BY bv.id_base_site, (EXTRACT(year FROM bv.visit_date_min)::integer)
         ), gypa_status_type AS (

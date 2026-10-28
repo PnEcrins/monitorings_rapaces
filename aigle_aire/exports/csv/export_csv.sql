@@ -50,9 +50,8 @@ FROM gn_monitoring.t_base_sites s
  WHERE (EXISTS ( SELECT 1
            FROM gn_monitoring.cor_site_type cst
              JOIN gn_monitoring.cor_module_type cmt ON cmt.id_type_site = cst.id_type_site
-             JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code::text = 'domaine_vital'::text
+             JOIN gn_commons.t_modules mod ON mod.id_module = cmt.id_module AND mod.module_code::text = 'aigle_aire'::text
           WHERE cst.id_base_site = s.id_base_site));
-;
 
 -- Export des contrôles
 CREATE OR REPLACE VIEW gn_monitoring.v_export_aigle_visits
@@ -77,7 +76,7 @@ SELECT
   a.jname ->> 'COM'::text AS commune
 FROM gn_monitoring.t_base_visits tbv
   JOIN gn_monitoring.t_base_sites s ON s.id_base_site = tbv.id_base_site
-  JOIN gn_commons.t_modules m ON m.id_module = tbv.id_module AND m.module_code = 'aigle'
+  JOIN gn_commons.t_modules m ON m.id_module = tbv.id_module AND m.module_code = 'aigle_aire'
   LEFT JOIN gn_monitoring.t_visit_complements tvc ON tvc.id_base_visit = tbv.id_base_visit
   LEFT JOIN LATERAL (
     SELECT string_agg(concat(tr.nom_role, ' ', tr.prenom_role), ', ') AS observateurs

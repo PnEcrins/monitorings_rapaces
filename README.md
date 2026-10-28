@@ -22,8 +22,8 @@ module :
 
 ```bash
 cd backend && source venv/bin/activate
-python media/monitorings/aigle/migration/migrate.py --module domaine_vital --id-dataset <ID> [--dry-run]
-python media/monitorings/aigle/migration/migrate.py --module aigle         --id-dataset <ID> [--dry-run]
+python media/monitorings/aigle_aire/migration/migrate.py --module domaine_vital --id-dataset <ID> [--dry-run]
+python media/monitorings/aigle_aire/migration/migrate.py --module aigle         --id-dataset <ID> [--dry-run]
 ```
 
 `domaine_vital` a été lancé avant `aigle` pour inscrire l'id_base_visit_domaine_vital dans chaque aire (nécessaire pour le trigger plus bas)
