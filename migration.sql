@@ -86,7 +86,8 @@ FROM (
    ('nidif_gypa', 'TYPE_SITE', 'AIRE_GYPA' ),
    ('rapace', 'TYPE_SITE', 'AIRE_RAPACE' )
 ) AS v ( module_code, type_nomenc_mnemonique, cd_nomnclature)
-JOIN gn_commons.t_modules m ON m.module_code = v.module_code;
+JOIN gn_commons.t_modules m ON m.module_code = v.module_code
+ON CONFLICT (id_type_site, id_module) DO NOTHING;
 
 
 

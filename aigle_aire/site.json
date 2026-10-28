@@ -14,7 +14,8 @@
     "id_inventor",
     "base_site_name",
     "base_site_code",
-    "altitude",
+    "altitude_min",
+    "altitude_max",
     "id_nomenclature_topology",
     "heigth",
     "id_nomenclature_position_cliff",
@@ -54,12 +55,6 @@
       "code_nomenclature_type": "AIGLE_AIRE_TOPOLOGY",
       "type_util": "nomenclature",
       "required": true
-    },
-    "altitude": {
-      "type_widget": "number",
-      "attribut_label": "Altitude",
-      "required": true,
-      "min": 0
     },
     "heigth": {
       "type_widget": "number",

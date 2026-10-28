@@ -218,6 +218,32 @@ def load_nomenclature_type_id(type_code):
     return type_id
 
 
+def ensure_module_type_site(id_module, id_type_site):
+    """
+    Associe le type de site au module (gn_monitoring.cor_module_type) s'il ne l'est pas
+    déjà : c'est ce lien type -> module qui rend les sites visibles dans le module
+    (monitoring >= 1.0), pas cor_site_module.
+    """
+    inserted = DB.session.execute(
+        text(
+            """
+            INSERT INTO gn_monitoring.cor_module_type (id_type_site, id_module)
+            SELECT :id_type_site, :id_module
+            WHERE NOT EXISTS (
+                SELECT 1 FROM gn_monitoring.cor_module_type
+                WHERE id_type_site = :id_type_site AND id_module = :id_module
+            )
+            """
+        ),
+        {"id_type_site": id_type_site, "id_module": id_module},
+    ).rowcount
+    if inserted:
+        logger.info(
+            "gn_monitoring.cor_module_type : type de site %s associé au module %s",
+            id_type_site, id_module,
+        )
+
+
 # --------------------------------------------------------------------------------
 # Module "aigle"
 # --------------------------------------------------------------------------------
@@ -417,6 +443,7 @@ def migrate_aigle(id_dataset):
             f"gn_monitoring.bib_type_site introuvable pour id_nomenclature_type_site="
             f"{ID_TYPE_SITE_AIRE_AIGLE} (AIRE_AIGLE)"
         )
+    ensure_module_type_site(ID_MODULE_AIGLE, ID_TYPE_SITE_AIRE_AIGLE)
 
     nomenclature_mappings = load_nomenclature_mappings(NOMENCLATURE_SOURCES_AIGLE)
     count_activity_mapping = load_count_label_mapping(
@@ -681,6 +708,7 @@ def migrate_domaine_vital(id_dataset):
             f"gn_monitoring.bib_type_site introuvable pour id_nomenclature_type_site="
             f"{ID_TYPE_SITE_DOMAINE_VITAL} (DOMAINE_VITAL)"
         )
+    ensure_module_type_site(ID_MODULE_DOMAINE_VITAL, ID_TYPE_SITE_DOMAINE_VITAL)
 
     domaine_vital_mappings = load_nomenclature_mappings(NOMENCLATURE_SOURCES_DOMAINE_VITAL)
     comportement_mapping = domaine_vital_mappings["comportement"]
