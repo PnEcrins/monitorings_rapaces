@@ -2,8 +2,8 @@
 Usage :
     cd backend
     source venv/bin/activate
-    python media/monitorings/aigle_aire/migration/migrate.py --module domaine_vital --id-dataset <ID_DATASET> [--dry-run]
-    python media/monitorings/aigle_aire/migration/migrate.py --module aigle --id-dataset <ID_DATASET> [--dry-run]
+    python media/monitorings/aigle_aire/migration/migrate.py --module aigle_domaine_vital --id-dataset <ID_DATASET> [--dry-run]
+    python media/monitorings/aigle_aire/migration/migrate.py --module aigle_aire --id-dataset <ID_DATASET> [--dry-run]
 
 Le script suppose une base cible vide (pas de site, ni de visite pour ces modules)
 """
@@ -753,8 +753,8 @@ def migrate_domaine_vital(id_dataset):
 
 
 MIGRATIONS = {
-    "aigle": migrate_aigle,
-    "domaine_vital": migrate_domaine_vital,
+    "aigle_aire": migrate_aigle,
+    "aigle_domaine_vital": migrate_domaine_vital,
 }
 
 
