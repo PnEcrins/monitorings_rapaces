@@ -21,8 +21,15 @@ from geonature.utils.env import DB
 from geonature.core.gn_monitoring.models import BibTypeSite
 from gn_module_monitoring.monitoring.models import TMonitoringSites, TMonitoringVisits
 
-logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+# Logger configuré directement (et non via basicConfig sur le root) : create_app()
+# reconfigure le logging de GeoNature (niveau du root relevé, handler ajouté), ce qui
+# masquait les logs INFO et dupliquait les autres.
 logger = logging.getLogger("migrate_monitoring")
+logger.setLevel(logging.INFO)
+logger.propagate = False
+_handler = logging.StreamHandler()
+_handler.setFormatter(logging.Formatter("%(levelname)s %(message)s"))
+logger.addHandler(_handler)
 
 ID_MODULE_AIGLE = None
 ID_TYPE_SITE_AIRE_AIGLE = None
