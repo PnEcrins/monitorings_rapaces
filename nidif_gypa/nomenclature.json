@@ -16,7 +16,7 @@
     },
     {
       "type": "STATUT_REPRO_GYPA",
-      "cd_nomenclature": "REPRODUCTION_EN_COURS",
+      "cd_nomenclature": "2",
       "mnemonique": "Reproduction en cours",
       "label_default": "Reproduction en cours",
       "definition_default": "Reproduction en cours"
@@ -24,35 +24,28 @@
     {
       "type": "STATUT_REPRO_GYPA",
       "cd_nomenclature": "SUCCÈS_DE_LA_REPRODUCTION",
-      "mnemonique": "Succès de la reproduction",
+      "mnemonique": "3",
       "label_default": "Succès de la reproduction",
       "definition_default": "Succès de la reproduction"
     },
     {
       "type": "STATUT_REPRO_GYPA",
-      "cd_nomenclature": "ÉCHEC",
+      "cd_nomenclature": "9",
       "mnemonique": "Échec",
       "label_default": "Échec",
       "definition_default": "Échec"
     },
     {
       "type": "STATUT_REPRO_GYPA",
-      "cd_nomenclature": "AUCUNE_ACTIVITÉ_CONSTATÉE",
-      "mnemonique": "Aucune activité constatée",
-      "label_default": "Aucune activité constatée",
-      "definition_default": "Aucune activité constatée"
-    },
-    {
-      "type": "STATUT_REPRO_GYPA",
-      "cd_nomenclature": "PAS_DE_CONCLUSION_POSSIBLE",
+      "cd_nomenclature": "1",
       "mnemonique": "Pas de conclusion possible",
       "label_default": "Pas de conclusion possible",
       "definition_default": "Pas de conclusion possible"
     },
     {
       "type": "STATUT_REPRO_GYPA",
-      "cd_nomenclature": "PAS_DE_REPRODUCTION_CONSTATÉE",
-      "mnemonique": "Pas de reproduction constatée",
+      "cd_nomenclature": "8",
+      "mnemonique": "Pas de reproduction constatée sur cette aire cette année",
       "label_default": "Pas de reproduction constatée",
       "definition_default": "Pas de reproduction constatée"
     }
