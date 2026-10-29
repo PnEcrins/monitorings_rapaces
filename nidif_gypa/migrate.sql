@@ -1,14 +1,16 @@
 
-WITH comportement_mapping (comportement, cd_nomenclature, ordre) AS (
+WITH comportement_mapping (comportement, cd_nomenclature) AS (
   VALUES
-    ('Jeune envolé', 'SUCCÈS_DE_LA_REPRODUCTION', 1),
-    ('Accouplement', 'REPRODUCTION_EN_COURS', 2),
-    ('Couvaison', 'REPRODUCTION_EN_COURS', 2),
-    ('Jeune au nid', 'REPRODUCTION_EN_COURS', 2),
-    ('Aire vide', 'AUCUNE_ACTIVITÉ_CONSTATÉE', 3),
-    ('Posé', 'PAS_DE_CONCLUSION_POSSIBLE', 4),
-    ('Tandem', 'PAS_DE_CONCLUSION_POSSIBLE', 4),
-    ('Territorial', 'PAS_DE_CONCLUSION_POSSIBLE', 4)
+    -- cd_nomenclature de STATUT_REPRO_GYPA : 3 = succès, 2 = reproduction en
+    -- cours, 1 = pas de conclusion possible
+    ('Jeune envolé', '3'),
+    ('Accouplement', '2'),
+    ('Couvaison', '2'),
+    ('Jeune au nid', '2'),
+    ('Aire vide', '1'),
+    ('Posé', '1'),
+    ('Tandem', '1'),
+    ('Territorial', '1')
 ),
 visit_comportements AS (
   SELECT
@@ -22,13 +24,13 @@ visit_comportements AS (
     AND jsonb_typeof(oc.data -> 'comportement') = 'array'
 ),
 visit_status AS (
-  -- une ligne par visite : le comportement de plus haute priorité qu'elle contient
+  -- une ligne par visite : le statut le plus élevé parmi ses comportements
   SELECT DISTINCT ON (vco.id_base_visit)
     vco.id_base_visit,
     cm.cd_nomenclature
   FROM visit_comportements vco
   JOIN comportement_mapping cm ON cm.comportement = vco.comportement
-  ORDER BY vco.id_base_visit, cm.ordre
+  ORDER BY vco.id_base_visit, cm.cd_nomenclature::integer DESC
 )
 UPDATE gn_monitoring.t_visit_complements vc
 SET data = vc.data

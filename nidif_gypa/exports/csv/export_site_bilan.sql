@@ -10,30 +10,18 @@
 -- Le statut est alors NULL.
 --
 -- Le statut de reproduction d'une aire, pour une année donnée, est le
--- "meilleur" statut_reproduction renseigné sur ses visites de l'année. Les
--- cd_nomenclature de STATUT_REPRO_GYPA n'étant pas numériques, l'ordre est
--- donné explicitement par la CTE statut_rang (rang le plus élevé retenu).
--- Comme pour l'aigle, "pas de reproduction constatée" et "échec" priment sur
--- le succès : un échec constaté après une reproduction en cours/réussie
--- l'emporte.
+-- meilleur (cd_nomenclature le plus élevé) statut_reproduction renseigné sur
+-- ses visites de l'année. Comme pour l'aigle, "pas de reproduction constatée"
+-- (8) et "échec" (9) priment sur le succès (3) : un échec constaté après une
+-- reproduction en cours/réussie l'emporte.
 
 DROP VIEW IF EXISTS gn_monitoring.v_export_nidif_gypa_site_bilan;
 CREATE OR REPLACE VIEW gn_monitoring.v_export_nidif_gypa_site_bilan
 AS
-WITH statut_rang (cd_nomenclature, rang) AS (
-  VALUES
-    ('PAS_DE_CONCLUSION_POSSIBLE', 1),
-    ('AUCUNE_ACTIVITÉ_CONSTATÉE', 2),
-    ('REPRODUCTION_EN_COURS', 3),
-    ('SUCCÈS_DE_LA_REPRODUCTION', 4),
-    ('PAS_DE_REPRODUCTION_CONSTATÉE', 5),
-    ('ÉCHEC', 6)
-),
-statut_nomenclature AS (
-  SELECT n.id_nomenclature, n.cd_nomenclature, n.label_default, sr.rang
+WITH statut_nomenclature AS (
+  SELECT n.id_nomenclature, n.cd_nomenclature, n.label_default
   FROM ref_nomenclatures.t_nomenclatures n
     JOIN ref_nomenclatures.bib_nomenclatures_types bnt ON bnt.id_type = n.id_type
-    JOIN statut_rang sr ON sr.cd_nomenclature = n.cd_nomenclature
   WHERE bnt.mnemonique = 'STATUT_REPRO_GYPA'
 ),
 visit_status AS (
@@ -46,7 +34,7 @@ visit_status AS (
     JOIN gn_commons.t_modules m ON m.id_module = bv.id_module AND m.module_code = 'nidif_gypa'
   WHERE (vc.data ->> 'statut_reproduction') IS NOT NULL
 ),
--- Statut de rang le plus élevé parmi les visites d'une même aire et d'une
+-- Statut le plus élevé (meilleur) parmi les visites d'une même aire et d'une
 -- même année.
 best_status AS (
   SELECT DISTINCT ON (vst.id_base_site, vst.annee)
@@ -56,7 +44,7 @@ best_status AS (
     sn.label_default
   FROM visit_status vst
     JOIN statut_nomenclature sn ON sn.id_nomenclature = vst.id_nomenclature_statut_repro
-  ORDER BY vst.id_base_site, vst.annee, sn.rang DESC
+  ORDER BY vst.id_base_site, vst.annee, sn.cd_nomenclature::integer DESC
 ),
 sites AS (
   SELECT
