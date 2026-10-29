@@ -23,8 +23,8 @@
     },
     {
       "type": "STATUT_REPRO_GYPA",
-      "cd_nomenclature": "SUCCÈS_DE_LA_REPRODUCTION",
-      "mnemonique": "3",
+      "cd_nomenclature": "3",
+      "mnemonique": "Succès de la reproduction",
       "label_default": "Succès de la reproduction",
       "definition_default": "Succès de la reproduction"
     },
