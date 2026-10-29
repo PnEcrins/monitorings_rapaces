@@ -24,8 +24,8 @@
 -- concernée (ces deux tables n'ont pas forcément une ligne par année,
 -- seulement quand ça change).
 
-DROP VIEW IF EXISTS gn_monitoring.v_export_domaine_vital_repro_status;
-CREATE OR REPLACE VIEW gn_monitoring.v_export_domaine_vital_repro_status
+DROP VIEW IF EXISTS gn_monitoring.v_export_aigle_domaine_vital_repro_status;
+CREATE OR REPLACE VIEW gn_monitoring.v_export_aigle_domaine_vital_repro_status
 AS
 WITH visit_status AS (
   SELECT

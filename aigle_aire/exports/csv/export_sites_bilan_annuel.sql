@@ -1,5 +1,5 @@
 
-CREATE OR REPLACE VIEW gn_monitoring.v_export_aigle_sites_bilan_annuel
+CREATE OR REPLACE VIEW gn_monitoring.v_export_aigle_aire_sites_bilan_annuel
 AS
 WITH activite_categorie (cd_nomenclature, bilan) AS (
   VALUES

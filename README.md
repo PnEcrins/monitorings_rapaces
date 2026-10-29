@@ -55,8 +55,8 @@ territoire (avant le début de la saison suivante)
 
 Notes :
 
-Dans la V1 :
-Contrairement aux "activités" sur les aires, les "comportements" noté lors d'une "rencontre" sur un domaine vital n'entraine pas un véritable changement du statut de repro. Même si on note deun comportement "deux jeunes avec les adultes", le statut de repro est mis à "aucune conclusion possible". Sans la V2, on ne change le statut de repro à partir des visites sur les domaine vitaux. Il faut explicitement modifier le statut de repro pour que celui-ci s'affiche en couleur sur la carte
+Dans la V1 les comportements (appellé activité) noté au niveau de domaines pouvait changer le statut de repro calculé. Ce n'est pas le cas dans la v2.
+Dans la v2 seuls les info noté au niveau de l'aire peuvent changé le statut de repro. Le statut de repro est obligatoire au niveau de la visite du domaine vital.
 
 ### Problème de non-unicité des domaines vitaux
 

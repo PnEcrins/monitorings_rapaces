@@ -54,7 +54,7 @@ FROM gn_monitoring.t_base_sites s
           WHERE cst.id_base_site = s.id_base_site));
 
 -- Export des contrôles
-CREATE OR REPLACE VIEW gn_monitoring.v_export_aigle_visits
+CREATE OR REPLACE VIEW gn_monitoring.v_export_aigle_aire_visits
 AS
 SELECT
   s.id_base_site AS id_base_site,

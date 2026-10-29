@@ -17,7 +17,8 @@
       "type_widget": "nomenclature",
       "attribut_label": "Statut de reproduction",
       "code_nomenclature_type": "STATUT_REPRO_GYPA",
-      "type_util": "nomenclature"
+      "type_util": "nomenclature",
+      "required": true
     },
     "obs_txt": {
       "type_widget": "text",

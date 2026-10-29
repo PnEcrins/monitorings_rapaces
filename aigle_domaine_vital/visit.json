@@ -58,7 +58,8 @@
       "type_widget": "nomenclature",
       "attribut_label": "Statut de reproduction:",
       "code_nomenclature_type": "AIGLE_STATUT_REPRODUCTION",
-      "type_util": "nomenclature"
+      "type_util": "nomenclature",
+      "required": true
     },
     "medias": {
       "hidden": true,
