@@ -35,8 +35,8 @@ WHERE EXISTS (
 )
 ;
 
-DROP VIEW IF EXISTS gn_monitoring.v_export_domaine_vital_visits;
-CREATE OR REPLACE VIEW gn_monitoring.v_export_domaine_vital_visits
+DROP VIEW IF EXISTS gn_monitoring.v_export_aigle_domaine_vital_visits;
+CREATE OR REPLACE VIEW gn_monitoring.v_export_aigle_domaine_vital_visits
 AS
 SELECT s.id_base_site,
     s.base_site_name AS nom,

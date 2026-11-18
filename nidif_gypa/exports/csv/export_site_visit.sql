@@ -1,7 +1,7 @@
 -- Visites d'une aire de gypaète, utilisée par gn_module_monitoring_year_synthese
--- (visit_export_name = "site_visit") pour le panneau de détail des visites.
+-- (visit_export_name = "visit") pour le panneau de détail des visites.
 DROP VIEW IF EXISTS gn_monitoring.v_export_nidif_gypa_visit;
-CREATE OR REPLACE VIEW gn_monitoring.v_export_nidif_gypa_site_visit
+CREATE OR REPLACE VIEW gn_monitoring.v_export_nidif_gypa_visit
 AS
 SELECT s.id_base_site,
     s.base_site_name AS nom,
@@ -9,7 +9,7 @@ SELECT s.id_base_site,
     tbv.visit_date_min,
     EXTRACT(year FROM tbv.visit_date_min)::integer AS annee,
     m.module_code,
-    concat(to_char(tbv.visit_date_min::timestamp with time zone, 'DD/MM/YYYY'::text), ' - ', obs.observateurs, ' - ', s.base_site_name) AS visite_label,
+    concat(to_char(tbv.visit_date_min::timestamp with time zone, 'DD/MM/YYYY'::text), ' - ', obs.observateurs) AS visite_label,
     obs.observateurs,
     (tvc.data ->> 'obs_txt'::text) AS "Observateur(s) hors PNE",
     (tvc.data ->> 'hour_min'::text) AS "Heure début",

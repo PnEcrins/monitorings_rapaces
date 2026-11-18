@@ -32,22 +32,20 @@ AS WITH sites AS (
              JOIN gn_commons.t_modules m ON m.id_module = bv.id_module AND m.module_code::text = 'aigle_aire'::text
              JOIN gn_monitoring.t_visit_complements vc ON vc.id_base_visit = bv.id_base_visit
           GROUP BY bv.id_base_site, (EXTRACT(year FROM bv.visit_date_min)::integer)
-        ), gypa_status_type AS (
-         SELECT bib_nomenclatures_types.id_type
-           FROM ref_nomenclatures.bib_nomenclatures_types
-          WHERE bib_nomenclatures_types.mnemonique::text = 'STATUT_REPRO_GYPA'::text
         ), gypa_visit_activite AS (
+         -- Activité : aire chargée ou en construction, ou au moins une
+         -- observation sur la visite, ou au moins un individu dénombré.
          SELECT bv.id_base_site,
             EXTRACT(year FROM bv.visit_date_min)::integer AS annee,
-            bool_or(n.cd_nomenclature IS NOT NULL AND n.cd_nomenclature::text <> 'AUCUNE_ACTIVITÉ_CONSTATÉE'::text OR (EXISTS ( SELECT 1
+            bool_or((vc.data ->> 'etat_aire'::text) = 'Aire chargée ou en construction'::text OR (EXISTS ( SELECT 1
                    FROM gn_monitoring.t_observations obs
-                     JOIN taxonomie.taxref t ON t.cd_nom = obs.cd_nom
-                  WHERE obs.id_base_visit = bv.id_base_visit AND t.cd_ref = 2852))) AS activite_aire
+                  WHERE obs.id_base_visit = bv.id_base_visit)) OR (EXISTS ( SELECT 1
+                   FROM gn_monitoring.t_observations obs
+                     JOIN gn_monitoring.t_observation_complements oc ON oc.id_observation = obs.id_observation
+                  WHERE obs.id_base_visit = bv.id_base_visit AND COALESCE((oc.data ->> 'count'::text)::integer, 0) > 0))) AS activite_aire
            FROM gn_monitoring.t_base_visits bv
              JOIN gn_commons.t_modules m ON m.id_module = bv.id_module AND m.module_code::text = 'nidif_gypa'::text
              JOIN gn_monitoring.t_visit_complements vc ON vc.id_base_visit = bv.id_base_visit
-             LEFT JOIN ref_nomenclatures.t_nomenclatures n ON n.id_nomenclature = ((vc.data ->> 'statut_reproduction'::text)::integer) AND n.id_type = (( SELECT gypa_status_type.id_type
-                   FROM gypa_status_type))
           GROUP BY bv.id_base_site, (EXTRACT(year FROM bv.visit_date_min)::integer)
         ), rapace_status_type AS (
          SELECT bib_nomenclatures_types.id_type
@@ -99,22 +97,11 @@ AS WITH sites AS (
     concat(sites.base_site_name, ' (' , sites.module_code, ')') as base_site_name ,
     sites.base_site_code,
     sites.geom,
-    a.jname ->> 'COM'::text AS commune,
-    a.jname ->> 'SEC'::text AS secteur,
     annees.annee,
     COALESCE(va.activite_aire, false) AS _activite_aire
    FROM sites
      CROSS JOIN annees
-     LEFT JOIN visit_activite va ON va.id_base_site = sites.id_base_site AND va.annee = annees.annee
-     LEFT JOIN LATERAL ( SELECT json_object_agg(d_1.type_code, d_1.o_name) AS jname
-           FROM ( SELECT sa.id_base_site,
-                    ta.type_code,
-                    string_agg(DISTINCT a_1.area_name::text, ','::text) AS o_name
-                   FROM gn_monitoring.cor_site_area sa
-                     JOIN ref_geo.l_areas a_1 ON sa.id_area = a_1.id_area
-                     JOIN ref_geo.bib_areas_types ta ON ta.id_type = a_1.id_type
-                  WHERE sa.id_base_site = sites.id_base_site
-                  GROUP BY sa.id_base_site, ta.type_code) d_1) a ON true;
+     LEFT JOIN visit_activite va ON va.id_base_site = sites.id_base_site AND va.annee = annees.annee;
 
 
 

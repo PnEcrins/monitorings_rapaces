@@ -86,3 +86,42 @@ Cette correspondance a été faire à partir de `pr_aigle.cor_aire_territoire` e
 Pour garder le lien entre les sites et les domaines vitaux (utile pour calculer le statut de repro à partir des visites sur les aires), un trigger est déclenché à l'insertion ou à la modification de la géométrie du site ( -> voir `gn_monitoring.fct_trg_maj_domaine_vital_aire()`)
 
 Le script "migration.sql" contient ce trigger ainsi que des requêtes SQL nécessaire au fonctionnement des vues (utilisé pour le module 'monitoring-year-synthese')
+
+# Monitoring synthese
+
+Le module `monitoring_year_synthese` affiche, année par année, une carte des sites de chaque module. Il s'appuie uniquement sur des vues d'export SQL (dans `<module>/exports/csv/`) qui remettent à plat, pour chaque site et chaque année, la valeur utilisée pour la légende. Tous les sites apparaissent pour toutes les années (`CROSS JOIN` sites × années), même sans visite. La configuration des pages se trouve dans `config/monitoring_year_synthese_config.toml` de GeoNature.
+
+## Aigle
+
+La page "Suivi de la reproduction des aigles royaux" combine deux sous-modules :
+
+- **Domaines vitaux** (`gn_monitoring.v_export_aigle_domaine_vital_repro_status`, `aigle_domaine_vital/exports/csv/export_repro_status.sql`) : le statut de reproduction d'un domaine vital pour une année est le plus élevé (cd_nomenclature max de `AIGLE_STATUT_REPRODUCTION`) entre :
+  - le `statut_reproduction` saisi sur les visites du domaine vital ;
+  - le statut déduit des visites des aires rattachées à ce domaine vital (via `cor_aire_domaine_vital_year`) : activités cochées (correspondance dans `gn_monitoring.bib_correspondance_activite_statut_repro`), jeunes blancs/noirs > 0 → reproduction en cours (2), 1 jeune envolé → 3, 2 jeunes envolés → 4.
+
+  Les comportements et dénombrements (`nb_jeune_seul`, `nb_jeune_avec_adulte`) saisis sur les visites du domaine vital ne modifient pas le statut : seul le champ `statut_reproduction` est pris en compte. "Pas de reproduction constatée" (8) et "échec" (9) priment volontairement sur le succès.
+- **Aires** (`gn_monitoring.v_export_aigle_aire_sites_bilan_annuel`) : bilan annuel de l'activité de chaque aire, le plus élevé de ses visites de l'année :
+  - "Échec" : jeune(s) mort(s) ou œuf(s) abandonné(s) ;
+  - "Activité noté sur l'aire" : accouplement, apport de proie, couvaison, dépôt de branche, nourrissage, relève, ou au moins un adulte / jeune blanc / jeune noir / jeune envolé dénombré ;
+  - "Aucune activité constatée" : visite sans aucune des activités ci-dessus (aire vide, aucune activité constatée, autre) ;
+  - "Aucune visite" : pas de visite cette année-là.
+
+## Gypaète
+
+Page "Suivi de la reproduction des gypaètes" (`gn_monitoring.v_export_nidif_gypa_site_bilan`, `nidif_gypa/exports/csv/export_site_bilan.sql`) : le statut de reproduction d'une aire pour une année est uniquement le plus élevé (cd_nomenclature max de `STATUT_REPRO_GYPA`) des `statut_reproduction` saisis sur ses visites de l'année. Les observations et l'état de l'aire ne sont pas pris en compte. Ordre : pas de conclusion possible (1) < reproduction en cours (2) < succès (3) < pas de reproduction constatée (8) < échec (9). Sans statut saisi dans l'année, le statut est vide ("pas de données").
+
+Le détail des visites (panneau latéral) vient de `gn_monitoring.v_export_nidif_gypa_visit` (`nidif_gypa/exports/csv/export_site_visit.sql`).
+
+## Rapaces (toutes aires)
+
+Page "Synthèse des aires tout rapaces confondus" (`gn_monitoring.v_export_rapace_activite_aire`, `rapace/exports/csv/export_activite_aire.sql`) : regroupe sur une même carte les aires des trois modules (`aigle_aire`, `nidif_gypa`, `rapace`) et indique seulement, pour chaque aire et chaque année, s'il y a eu de l'activité (`_activite_aire` : vrai / faux). Il n'y a pas de statut de reproduction sur cette page.
+
+Une aire est considérée comme active une année si au moins une de ses visites de l'année vérifie :
+
+| Module       | Critère d'activité                                                                                                                                                         |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `aigle_aire` | une activité cochée autre que "aire vide", "aucune activité constatée" ou "autre (voir remarques)", OU au moins un adulte, jeune blanc, jeune noir ou jeune envolé dénombré |
+| `nidif_gypa` | état de l'aire = "Aire chargée ou en construction", OU au moins une observation sur la visite, OU au moins un individu dénombré sur une observation                        |
+| `rapace`     | un statut de reproduction renseigné autre que "pas de reproduction constatée", OU une activité cochée autre que "aire vide" ou "non renseigné"                              |
+
+Sans visite (ou sans visite répondant à ces critères), l'aire est considérée sans activité.

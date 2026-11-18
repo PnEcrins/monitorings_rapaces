@@ -20,11 +20,10 @@
   ],
   "display_list": ["base_site_name", "types_site", "nb_visits"],
   "specific": {
-    "types_site": {
-      "default": [
-        { "id_nomenclature_type_site": 1014 },
-        { "id_nomenclature_type_site": 977 }
-      ]
+    "nb_visits": {
+      "attribut_label": "Nombre de visite",
+      "type_widget": "number",
+      "hidden": true
     }
   }
 }

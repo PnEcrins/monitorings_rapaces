@@ -19,16 +19,14 @@
   "genre": "F",
   "map_label_field_name": "base_site_name",
   "specific": {
-    "id_dataset": {
-      "hidden": "({meta}) => meta.dataset && Object.keys(meta.dataset).length == 1"
-    },
     "comments": {
       "type_widget": "textarea"
     },
     "cd_nom": {
       "type_widget": "taxonomy",
       "attribut_label": "Taxon",
-      "type_util": "taxonomy"
+      "type_util": "taxonomy",
+      "required": true
     },
     "activite_aire_rapaces": {
       "type_widget": "nomenclature",
