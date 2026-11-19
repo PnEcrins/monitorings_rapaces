@@ -64,8 +64,10 @@ sites AS (
     s.id_base_site,
     s.base_site_name,
     s.base_site_code,
-    st_asgeojson(s.geom) AS geom
+    st_asgeojson(s.geom) AS geom,
+    CASE WHEN COALESCE((sc.data ->> 'valid')::boolean, false) THEN 'oui' ELSE 'non' END AS localisation_precise
   FROM gn_monitoring.t_base_sites s
+    LEFT JOIN gn_monitoring.t_site_complements sc ON sc.id_base_site = s.id_base_site
   WHERE EXISTS (
     SELECT 1
     FROM gn_monitoring.cor_site_type cst
@@ -93,7 +95,8 @@ SELECT
     WHEN 2 THEN 'Activité noté sur l''aire'
     WHEN 1 THEN 'Aucune activité constatée'
     ELSE 'Aucune visite'
-  END AS activite_aire
+  END AS activite_aire,
+  sites.localisation_precise
 FROM sites
   CROSS JOIN annees
   LEFT JOIN site_year_bilan syb

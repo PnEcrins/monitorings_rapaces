@@ -85,7 +85,7 @@
     },
     "valid": {
       "type_widget": "bool_checkbox",
-      "attribut_label": "Validé",
+      "attribut_label": "Localisation précise",
       "value": false
     }
   }

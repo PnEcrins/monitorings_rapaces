@@ -59,7 +59,7 @@ AS
 SELECT
   s.id_base_site AS id_base_site,
   s.base_site_name AS nom_site,
-  tbv.id_base_visit AS id_visite,
+  tbv.id_base_visit,
   tbv.visit_date_min AS date_visite,
   date_part('year', tbv.visit_date_min) as annee,
   obs.observateurs,
